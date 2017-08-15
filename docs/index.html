@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SowString Documentation</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css" integrity="sha256-tAflq+ymku3Khs+I/WcAneIlafYgDiOQ9stIHH985Wo=" crossorigin="anonymous" />
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Sow String</h1>
+        <p>A tiny pure Javascript library to sow indented strings and crop tree arrays.</p>
+    </div>
+    <div class="float">
+        <a href="https://ezaca.github.com/sowstring/dist/sowstring.min.js" download>Download</a>
+        <a href="https://github.com/ezaca/sowstring">GitHub</a>
+        <a href="https://github.com/ezaca/sowstring/blob/master/LICENSE">License</a>
+    </div>
+</header>
+<main>
+    <h2>How To Use?</h2>
+    <p>Include the library in your code:</p>
+    <pre><code class="xml">&lt;script src=&quot;path/to/library/sowstring.js&quot;&gt;&lt;/script&gt;</code></pre>
+    
+    <h3>String to Tree</h3>
+    <p>On Javascript, call the function <code class="pretty">SowString</code>, as follows:</p>
+    <pre><code class="js">var myTree = SowString(myString)</code></pre>
+    <p>You can also include options, which is a plain Javascript object:</p>
+    <pre><code class="js">var myTree = SowString(myString, {<span class="placeholder">&hellip;options&hellip;</span>})</code></pre>
+    <h4>Options</h4>
+    <p><code class="pretty">tabReplace</code> (String) &mdash; set this option to the string that will replace every TAB character (ASCII: 9). <strong>Default: 4 whitespaces</strong>.</p>
+    <p><code class="pretty">emptyLines</code> (Boolean) &mdash; when true, preserve the empty lines in the final tree items. When false, empty lines will be entirely ignored. The empty lines after the string content will be always ignored, independent of this option. <strong>Default: false</strong>.</p>
+    <p><code class="pretty">indentMultiple</code> (Number) &mdash; when provided, the number of spaces must be a multiple of this number to be a valid indent. <strong>Default: null</strong>.</p>
+    
+    <h3>Tree to String</h3>
+    <p>If you don't want to harvest directly in the tree object, may be you want to unsow that string.
+    Thinking on that, we have the function <code class="pretty">UnsowString</code>, which convert the tree back to the (almost original) string:</p>
+    <pre><code class="js">var myString = UnsowString(myTree)</code></pre>
+    <p>Here we also have options, which is also a plain object:</p>
+    <pre><code class="js">var myString = UnowString(myTree, {<span class="placeholder">&hellip;options&hellip;</span>})</code></pre>
+    <h4>Options</h4>
+    <p><code class="pretty">each</code> (Function) &mdash; you know that times when you want to modify each item before write it as string? We don't know too, but we have a function to do that, anyway!
+    The callback function passed to this option will be called once for each item, first to the node, then for the children, then to the next sibling and so on&hellip;. The function receives 2 arguments,
+    being the first the parent node of the item (an Array), and the second is the item itself (the String). The function is called only for string items, not for children arrays.</p>
+
+    <h2>Errors and poisonous trees</h2>
+    <p>If the string has inconsistent indentation, an error of the primitive type
+    <code class="pretty">Error</code> will be thrown. For example, consider
+    the following tree:</p>
+    <pre>Parent<br>    Node 1<br>    Node 2<br>   Node 3<br>    Node 4</pre>
+
+    <p>Observe the <q>Node 3</q> item, it has one space less than the previous
+    item, but has three spaces more than the parent. It is impossible to solve
+    automatically what it means because it cannot be the parent, as it has much
+    more indentation, and cannot be a sibling because it is very little indented.
+    So, it is not a parent, sibling or child, and there's no other state in our
+    tree.</p>
+    <p>These kind of issues must be solved manually, or through other business specific
+    algorithms.</p>
+    <p>In the other hand, if you are using the <code class="pretty">indentMultiple</code> option,
+    this case will be fixed automatically because of the logic applied. The item <q>Parent</q>
+    will end with 2 children, <q>Node 1</q> and <q>Node 2</q>. <q>Node 3</q>, in turn, is a
+    sibling of <q>Parent</q>, with 3 spaces at start, and <q>Node 4</q> as its only child.</p>
+    <p>Specifically with te <code class="pretty">indentMultiple</code> option, the tree can be
+    understood as the following structure:</p>
+    <pre><code>Parent<br>    Node 1<br>    Node 2<br>___Node3<br>    Node 4</code></pre>
+    <p>In other cases, when the option is not present, the following Error will be thrown:</p>
+    <pre><code>Uncaught Error: Bad indentation at line X, we expected Y, Z or more spaces, but received only W</code></pre>
+    <p>Remember that the referred line starts from 1, being 1 the first line of the passed string.</p>
+
+    <h2>Using the tree</h2>
+    <p>After using the <code class="pretty">SowString</code> function with a valid
+    string, you will receive the tree as a Javascript Array. Each String item of
+    this array is an item, and each Array item of this array represents a subnode
+    with more strings and arrays. The items can be referred by their array indexes.</p>
+
+    <p>Consider the following three:</p>
+    <pre><code>Derivation<br>  Javascript<br>    TypeScript<br>    CoffeeScript<br>  CSS<br>    LESS<br>    SASS</code></pre>
+    <p>This will result in the following Javascript structure:</p>
+    <pre><code>[
+    0:"Derivation",
+    1:[
+        0:"Javascript",
+        1:[
+            0:"Typescript",
+            1:"CoffeeScript"
+          ],
+        2:"CSS",
+        3:[
+            0:"CSS",
+            1:"LESS"
+          ]
+      ]
+]</code></pre>
+
+    <p>Note as the subnodes are identified by its previous item, which is always a string.
+    Unless there is some error with the library, you can consider the following rules:</p>
+    <ul>
+        <li>An array will never be empty, except for the outter array (that returned from the function);</li>
+        <li>The first item of any children array will be always a string, except for the outter array;</li>
+        <li>The last item of the outter array will never be an empty string;</li>
+    </ul>
+
+    <p>Each array, including the outter one, have the following properties:</p>
+    <p><code class="pretty">indent</code> (Number) &mdash; number of spaces before each string child.</p>
+    <p><code class="pretty">level</code> (Number) &mdash; the level of the node, starting from zero and increasing 1 for each descendant.</p>
+    <p><code class="pretty">parent</code> (Array) &mdash; reference to the parent node or null for the outter node.</p>
+    <p><code class="pretty">pushIndex</code> (Number) &mdash; the index where the node was pushed in its parent.</p>
+
+    <p>You can access these properties for any array in the tree:</p>
+    <pre><code class="js">myTree.level // will be 0&#10;myTree[1][1].level // will be 2</code></pre>
+    <p>Referencing a string item you can get its content, for example:</p>
+    <pre><code class="js">myTree[0] // will be "Derivation" in the previous example.</code></pre>
+
+    <h2>Storing the tree</h2>
+    <p>Even whether you are tempted to store the tree as a plain JSON string, be
+    advised that it will lose the properties of the children arrays</p>
+    <p>To save the items as string, we recommend to "unsow" the tree with the
+    function <code class="pretty">UnsowString</code>. This function will generate
+    a very similar string, which will recover all properties later, through the
+    <code class="pretty">SowString</code> function.</p>
+</main>
+
+<footer>&copy; 2017 Eliakim Zacarias. The MIT License.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/xml.min.js" integrity="sha256-tTizFdjdqBNNTjhOdrSB4jSoCiSZjbtQBdsUSl+P+PQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js" integrity="sha256-sZa6ttk3lwj5MNkWzq2VrQ6WFB965Gn0uLe3oUBH2Iw=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+</body>
+</html>

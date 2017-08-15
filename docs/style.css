@@ -1,0 +1,98 @@
+html, body{
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    margin: 0;
+}
+footer{
+    background-color: #2196F3;
+    color: #fff;
+    font-size: 0.7em;
+    margin-top: 2rem;
+    padding: .7em;
+    text-align: center;
+}
+header{
+    align-content: center;
+    align-items: center;
+    background-color: #2196F3;
+    background-image: url('background-pixabay-free.png');
+    background-position: left top;
+    background-repeat: no-repeat;
+    box-shadow: rgba(0,0,0,.5) 0 2px 5px;
+    display: flex;
+    flex-wrap: wrap;
+    height: 300px;
+    justify-content: left;
+}
+header > div{
+    margin-left: 200px;
+}
+header > div > *{
+    margin: 0;
+    color: #fff;
+    text-align: left;
+    width: 100%;
+}
+header > h1{
+    font-size: 3em;
+}
+header > p{
+    font-size: 1.2em;
+}
+header .float{
+    display: flex;
+    position: absolute;
+    top: 20px;
+    right: 10px;
+}
+header .float a{
+    text-decoration: none;
+    color: #fff;
+    margin: 0 10px;
+}
+header .float a:hover{
+    text-decoration: underline;
+}
+main{
+    margin: 0 50px;
+}
+p{
+    line-height: 1.7em;
+}
+pre{
+    box-shadow: rgba(0,0,0,.5) 0 0 5px;
+    background: #f7f7f7;
+    padding: 1em;
+    margin: 2em 0;
+    overflow: auto;
+}
+h2{
+    font-size: 2em;
+    border-top: #ddd solid 1px;
+    padding-top: 0.5em;
+    margin-top: 2em;
+}
+
+h3{
+    font-size: 1.5em;
+    margin: 2em 0 0 0;
+}
+
+h4{
+    font-size: 1.2em;
+}
+
+code.pretty{
+    box-shadow: rgba(0,0,0,.5) 0 0 2px;
+    background: #2196F3;
+    color: white;
+    padding: 2px 6px;
+}
+pre > code{
+    color: inherit;
+    box-shadow: none;
+    background: transparent;
+}
+code .placeholder{
+    color: #888;
+}
