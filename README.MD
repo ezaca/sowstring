@@ -1,6 +1,6 @@
 # Sow String
 
-[See documentation](https://ezaca.github.com/sowstring) or TL&DR below.
+[See documentation](https://ezaca.github.io/sowstring/docs/) or TL&DR below.
 
 # Usage
 
