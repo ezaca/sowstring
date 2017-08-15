@@ -1,0 +1,34 @@
+{
+  "name": "sowstring",
+  "version": "1.0.0",
+  "description": "A tiny pure Javascript library to sow indented strings and crop tree arrays.",
+  "homepage": "https://github.com/ezaca/sowstring#readme",
+  "main": "dist/sowstring.min.js",
+  "license": "MIT",
+  "author": "Eliakim Zacarias",
+  "contributors": [
+    "Eliakim Zacarias <https://github.com/ezaca>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ezaca/sowstring.git"
+  },
+  "keywords": [
+    "parse",
+    "indented",
+    "string",
+    "tree",
+    "javascript",
+    "browser",
+    "node"
+  ],
+  "bugs": {
+    "url": "https://github.com/ezaca/sowstring/issues"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/uglifyjs --lint --verbose --mangle --reserved 'SowString,UnsowString,exports' --output=dist/sowstring.min.js -- src/sowstring.js"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.0.27"
+  }
+}
