@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SowString Documentation</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github-gist.min.css" integrity="sha256-tAflq+ymku3Khs+I/WcAneIlafYgDiOQ9stIHH985Wo=" crossorigin="anonymous" />
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>Sow String Example</h1>
+        <p>Let's play with Sow String Library!</p>
+    </div>
+    <div class="float">
+        <a href="https://ezaca.github.com/sowstring/index.html">Documentation</a>
+        <a href="https://ezaca.github.com/sowstring/dist/sowstring.min.js" download>Download</a>
+        <a href="https://github.com/ezaca/sowstring">GitHub</a>
+        <a href="https://github.com/ezaca/sowstring/blob/master/LICENSE">License</a>
+    </div>
+</header>
+<main class>
+    <div>
+        <h2>Input</h2>
+        <p>Type the string here and let the rest with us:</p>
+        <textarea id="in1" oninput="doTheMagic()">Parent Node 1&#10;    Child Node 1&#10;    Child Node 2&#10;Parent Node 2&#10;</textarea>
+    </div>
+    <div>
+        <h2>Output</h2>
+        <p>When we apply <code class="pretty">SowString</code> we get the following (object as JSON):</p>
+        <pre id="out1"></pre>
+    </div>
+    <div>
+        <p>If we revert with <code class="pretty">UnsowString</code>, the "each" callback can format it as:</p>
+        <pre id="out2"></pre>
+    </div>
+</main>
+
+<footer>&copy; 2017 Eliakim Zacarias. The MIT License.</footer>
+
+<script type="text/javascript" src="../dist/sowstring.min.js"></script>
+<script type="text/javascript">
+
+var in1 = document.getElementById('in1')
+var out1 = document.getElementById('out1')
+var out2 = document.getElementById('out2')
+
+function doTheMagic(){
+    // Sow the string to crop the tree
+    try{
+        var tree = SowString(in1.value)
+    }catch(e){
+        out1.innerText = e
+        out2.innerText = e.stack
+        return
+    }
+
+    // Get tree as JSON
+    out1.innerText = JSON.stringify(tree, null, 4)
+
+    // Revert the tree to string
+    // out2.innerHTML = UnsowString(tree);
+
+    // Harvest data from tree
+    out2.innerHTML = UnsowString(tree, {
+        each: function(node, item){
+            var indent = '<span style="color:#ccc">'+String('·').repeat(node.indent)+'</span>'
+            var replacements = {'<':'lt','>':'gt','&':'amp','"':'quot'}
+            var text = String(item).replace(/[<>&"]/g, (match)=>{return '&'+replacements[match]+';'})
+            var level = ' <span style="color:#888;font-size:0.7em">[Level='+node.level+']</span>'
+            return indent+text+level
+        }
+    })
+}
+
+doTheMagic()
+</script>
+</body>
+</html>
