@@ -10,9 +10,9 @@ function SowString(passedValue, passedOptions)
 {
     // Fix options:
     var options = Object(passedOptions)
+    options.indentMultiple = Number(options.indentMultiple) || 0
     if (options.tabReplace===undefined) options.tabReplace=String(' ').repeat(4)
     if (options.emptyLines===undefined) options.emptyLines=false
-    if (options.indentMultiple!==undefined) options.indentMultiple = Number(options.indentMultiple) || 0
     // Capture lines:
     var lines = String(passedValue)
     .replace(/\r\n?/g, '\n')
