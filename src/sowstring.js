@@ -13,6 +13,7 @@ function SowString(passedValue, passedOptions)
     options.indentMultiple = Number(options.indentMultiple) || 0
     if (options.tabReplace===undefined) options.tabReplace=String(' ').repeat(4)
     if (options.emptyLines===undefined) options.emptyLines=false
+    if (options.useHeading===undefined) options.useHeading=false
     // Capture lines:
     var lines = String(passedValue)
     .replace(/\r\n?/g, '\n')
@@ -22,6 +23,7 @@ function SowString(passedValue, passedOptions)
     // Make result:
     var result = []
     result.parent = null
+    result.useHeading = options.useHeading
 
     function grow(parentArray, currentSpaces, lineIndex, level){
         var node, ln, indent, idx = lineIndex
@@ -59,7 +61,7 @@ function SowString(passedValue, passedOptions)
             }
             // Being the new indent greater than the old,
             // we reached a new level and a new child node will be called.
-            if (parentArray.length && (parentArray[parentArray.length-1] instanceof Array))
+            if (parentArray.length && (parentArray[parentArray.length-1] instanceof Array) && (parentArray[parentArray.length-1].indent !== indent))
             {
                 let parentExpectation = parentArray.indent
                 let siblingExpectation = parentArray[parentArray.length-1].indent
@@ -71,6 +73,8 @@ function SowString(passedValue, passedOptions)
             }
             node = []
             node.parent = parentArray
+            if (options.useHeading)
+                node.heading = parentArray.pop();
             idx = grow(node, indent, idx, level+1)
             node.pushIndex = parentArray.push(node)-1
         }
@@ -81,16 +85,26 @@ function SowString(passedValue, passedOptions)
     return result
 }
 
-function UnsowString(passedTree, options)
+function UnsowString(passedTree, passedOptions)
 {
     if (! passedTree instanceof Array)
         throw new Error('Invalid tree to unsow (argument 1)')
-    options = Object(options)
+    var options = Object(passedOptions)
     if (typeof options.each !== 'function') options.each = null
+    if (typeof options.useHeading === 'undefined') options.useHeading = Boolean(passedTree.useHeading)
     var result = [];
 
     function crop(node)
     {
+        if (node.parent && options.each)
+        {
+            let value = options.each(node, undefined)
+            if (value !== undefined)
+                result.push(value)
+        } else
+        if (node.parent && options.useHeading)
+            result.push(String(' ').repeat(node.parent.indent) + node.heading)
+
         for(var item of node)
         {
             if(item instanceof Array)

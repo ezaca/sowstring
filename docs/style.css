@@ -56,6 +56,9 @@ header .float a:hover{
 main{
     margin: 0 50px;
 }
+.never-break{
+    white-space: nowrap;
+}
 p{
     line-height: 1.7em;
 }
@@ -82,6 +85,11 @@ h4{
     font-size: 1.2em;
 }
 
+code{
+    box-shadow: rgba(0,0,0,.5) 0 0 2px;
+    background: #f7f7f7;
+    padding: 2px 6px;
+}
 code.pretty{
     box-shadow: rgba(0,0,0,.5) 0 0 2px;
     background: #2196F3;

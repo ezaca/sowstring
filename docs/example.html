@@ -25,7 +25,8 @@
     <div>
         <h2>Input</h2>
         <p>Type the string here and let the rest with us:</p>
-        <textarea id="in1" oninput="doTheMagic()">Parent Node 1&#10;    Child Node 1&#10;    Child Node 2&#10;Parent Node 2&#10;</textarea>
+        <textarea id="in1" oninput="doTheMagic()">Parent Node 1&#10;    Child Node 1&#10;        Grandson Node 1&#10;    Child Node 2&#10;Parent Node 2&#10;</textarea>
+        <div><label><input type="checkbox" id="in_heading" onclick="doTheMagic()"> Use heading items?</label></div>
     </div>
     <div>
         <h2>Output</h2>
@@ -44,13 +45,16 @@
 <script type="text/javascript">
 
 var in1 = document.getElementById('in1')
+var in_heading = document.getElementById('in_heading')
 var out1 = document.getElementById('out1')
 var out2 = document.getElementById('out2')
 
 function doTheMagic(){
     // Sow the string to crop the tree
     try{
-        var tree = SowString(in1.value)
+        var options = {}
+        options.useHeading = in_heading.checked
+        var tree = SowString(in1.value, options)
     }catch(e){
         out1.innerText = e
         out2.innerText = e.stack
@@ -66,10 +70,22 @@ function doTheMagic(){
     // Harvest data from tree
     out2.innerHTML = UnsowString(tree, {
         each: function(node, item){
-            var indent = '<span style="color:#ccc">'+String('·').repeat(node.indent)+'</span>'
+            var indent
+            var text
+            var level
             var replacements = {'<':'lt','>':'gt','&':'amp','"':'quot'}
-            var text = String(item).replace(/[<>&"]/g, (match)=>{return '&'+replacements[match]+';'})
-            var level = ' <span style="color:#888;font-size:0.7em">[Level='+node.level+']</span>'
+            if (! item)
+            {
+                if (! node.heading)
+                    return
+                indent = '<span style="color:#ccc">'+String('·').repeat(node.parent.indent)+'</span>'
+                text = String(node.heading).replace(/[<>&"]/g, (match)=>{return '&'+replacements[match]+';'})
+                level = ' <span style="color:#888;font-size:0.7em">[Heading Level='+node.parent.level+']</span>'
+                return indent+text+level
+            }
+            indent = '<span style="color:#ccc">'+String('·').repeat(node.indent)+'</span>'
+            text = String(item).replace(/[<>&"]/g, (match)=>{return '&'+replacements[match]+';'})
+            level = ' <span style="color:#888;font-size:0.7em">[Level='+node.level+']</span>'
             return indent+text+level
         }
     })
