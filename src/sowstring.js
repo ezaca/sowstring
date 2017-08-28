@@ -27,6 +27,7 @@ function SowString(passedValue, passedOptions)
 
     function grow(parentArray, currentSpaces, lineIndex, level){
         var node, ln, indent, idx = lineIndex
+        parentArray.isNode = true
         parentArray.level = level
         parentArray.indent = currentSpaces
         while(idx < lines.length)
