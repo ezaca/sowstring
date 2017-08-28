@@ -14,3 +14,6 @@ The SowString born in this version.
 ## Version 1.1.1 (contains: additions)
 - Added: this file was added;
 - Added: array nodes have a semantic field "isNode" (always "true"), but are not set to string nodes;
+
+# Version 1.1.2 (contains: fix)
+- Fixed: the "src" version was ahead of "dist";
