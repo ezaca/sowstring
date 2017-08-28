@@ -17,3 +17,8 @@ The SowString born in this version.
 
 # Version 1.1.2 (contains: fix)
 - Fixed: the "src" version was ahead of "dist";
+
+# Version 1.2.0 (contains: additions/docs, update)
+- Added: example page now shows the emptyLines option;
+- Updated: now empty lines are more consistent and appended after indented blocks;
+- Note: This is not considered a "breaking version" because it only fixes the behavior of empty lines. The major version remains unchanged.

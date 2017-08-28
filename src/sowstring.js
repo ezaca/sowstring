@@ -24,6 +24,7 @@ function SowString(passedValue, passedOptions)
     var result = []
     result.parent = null
     result.useHeading = options.useHeading
+    var emptyLinesCache = []
 
     function grow(parentArray, currentSpaces, lineIndex, level){
         var node, ln, indent, idx = lineIndex
@@ -33,20 +34,22 @@ function SowString(passedValue, passedOptions)
         while(idx < lines.length)
         {
             ln = lines[idx].trimLeft()
-            indent = lines[idx].length - ln.length
-            if (options.indentMultiple)
-            {
-                indent = Math.floor(indent / options.indentMultiple) * options.indentMultiple
-                ln = lines[idx].substr(indent)
-            }
             // Being the line empty,
             // we treat it as special case and continue to next line
             if (! ln.length)
             {
                 if (options.emptyLines)
-                    parentArray.push("")
+                    emptyLinesCache.push(lines[idx])
                 idx++
                 continue
+            }
+
+            // Before continue, work a little on indent values
+            indent = lines[idx].length - ln.length
+            if (options.indentMultiple)
+            {
+                indent = Math.floor(indent / options.indentMultiple) * options.indentMultiple
+                ln = lines[idx].substr(indent)
             }
             // Being the new indent lower than the old,
             // we reached the end of our node and return the control.
@@ -56,7 +59,9 @@ function SowString(passedValue, passedOptions)
             // we have a new sibling item.
             if (currentSpaces === indent)
             {
+                parentArray.push(...emptyLinesCache)
                 parentArray.push(ln)
+                emptyLinesCache = []
                 idx++
                 continue
             }
@@ -113,6 +118,9 @@ function UnsowString(passedTree, passedOptions)
             else
             if (options.each)
                 result.push(options.each(node, item))
+            else
+            if (! item.trim())
+                result.push(item)
             else
                 result.push(String(' ').repeat(node.indent) + item)
         }
