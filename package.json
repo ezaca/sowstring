@@ -1,7 +1,7 @@
 {
   "name": "sowstring",
   "version": "1.1.1",
-  "description": "A tiny pure Javascript library to sow indented strings and crop tree arrays.",
+  "description": "A tiny pure Javascript library to sow indented strings and harvest tree arrays.",
   "homepage": "https://github.com/ezaca/sowstring#readme",
   "main": "dist/sowstring.min.js",
   "license": "MIT",
