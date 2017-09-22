@@ -25,9 +25,10 @@
     <div>
         <h2>Input</h2>
         <p>Type the string here and let the rest with us:</p>
-        <textarea id="in1" oninput="doTheMagic()">Parent Node 1&#10;    Child Node 1&#10;        Grandson Node 1&#10;    Child Node 2&#10;Parent Node 2&#10;</textarea>
+        <textarea id="in1" oninput="doTheMagic()">Loading content with Javascript...</textarea>
         <div><label><input type="checkbox" id="in_heading" onclick="doTheMagic()"> Use heading items?</label></div>
         <div><label><input type="checkbox" id="in_empty" onclick="doTheMagic()"> Include empty lines?</label></div>
+        <div><label><input type="checkbox" id="in_filter" onclick="doTheMagic()"> Ignore // and # lines?</label></div>
     </div>
     <div>
         <h2>Output</h2>
@@ -48,8 +49,21 @@
 var in1 = document.getElementById('in1')
 var in_heading = document.getElementById('in_heading')
 var in_empty = document.getElementById('in_empty')
+var in_filter = document.getElementById('in_filter')
 var out1 = document.getElementById('out1')
 var out2 = document.getElementById('out2')
+
+in1.value =
+`Parent Node 1
+    Child Node 1
+        Grandson Node 1
+    Child Node 2
+    # Child Node 3
+    // Child Node 4
+    Child Node 5
+Parent Node 2
+// Parent Node 3
+`
 
 function doTheMagic(){
     // Sow the string to crop the tree
@@ -57,6 +71,12 @@ function doTheMagic(){
         var options = {}
         options.useHeading = in_heading.checked
         options.emptyLines = in_empty.checked
+        if (in_filter.checked)
+            options.filter = function(ln, indent){
+                if(ln.match(/^(\/\/|#)/))
+                    return false
+                return true
+            }
         var tree = SowString(in1.value, options)
     }catch(e){
         out1.innerText = e

@@ -51,6 +51,13 @@ function SowString(passedValue, passedOptions)
                 indent = Math.floor(indent / options.indentMultiple) * options.indentMultiple
                 ln = lines[idx].substr(indent)
             }
+            // Have we a filter? Then execute the filter and if the answer is
+            // false, ignore this line.
+            if (options.filter && (false === options.filter.apply(null, [ln, indent])))
+            {
+                idx++
+                continue
+            }
             // Being the new indent lower than the old,
             // we reached the end of our node and return the control.
             if (currentSpaces > indent)

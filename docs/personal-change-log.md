@@ -22,3 +22,8 @@ The SowString born in this version.
 - Added: example page now shows the emptyLines option;
 - Updated: now empty lines are more consistent and appended after indented blocks;
 - Note: This is not considered a "breaking version" because it only fixes the behavior of empty lines. The major version remains unchanged.
+
+# Version 1.3.0 (contains: additions)
+- Added: option "filter" now receives a function to filter lines.
+- Added: documentation now has the "filter" option.
+- Added: example now has a checkbox with an example for filter option.
