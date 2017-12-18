@@ -29,6 +29,7 @@
         <div><label><input type="checkbox" id="in_heading" onclick="doTheMagic()"> Use heading items?</label></div>
         <div><label><input type="checkbox" id="in_empty" onclick="doTheMagic()"> Include empty lines?</label></div>
         <div><label><input type="checkbox" id="in_filter" onclick="doTheMagic()"> Ignore // and # lines?</label></div>
+        <div><label><input type="checkbox" id="in_intercept" onclick="doTheMagic()"> Intercept lines to recognize commands :child, :parent and :sibling</label></div>
     </div>
     <div>
         <h2>Output</h2>
@@ -50,6 +51,7 @@ var in1 = document.getElementById('in1')
 var in_heading = document.getElementById('in_heading')
 var in_empty = document.getElementById('in_empty')
 var in_filter = document.getElementById('in_filter')
+var in_intercept = document.getElementById('in_intercept')
 var out1 = document.getElementById('out1')
 var out2 = document.getElementById('out2')
 
@@ -63,6 +65,7 @@ in1.value =
     Child Node 5
 Parent Node 2
 // Parent Node 3
+This line will be child if intercepted :parent
 `
 
 function doTheMagic(){
@@ -76,6 +79,15 @@ function doTheMagic(){
                 if(ln.match(/^(\/\/|#)/))
                     return false
                 return true
+            }
+        if (in_intercept.checked)
+            options.intercept = function(ln, indent, lineIndex, lines){
+                if (ln.match(/:child/i))
+                    return this.child
+                if (ln.match(/:parent/i))
+                    return this.parent
+                if (ln.match(/:sibling/i))
+                    return this.sibling
             }
         var tree = SowString(in1.value, options)
     }catch(e){
