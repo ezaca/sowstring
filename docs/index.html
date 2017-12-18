@@ -34,8 +34,16 @@
     <h4>Options</h4>
     <p><code class="pretty">emptyLines</code> (Boolean) &mdash; when true, preserve the empty lines in the final tree items. When false, empty lines will be entirely ignored. The empty lines after the string content will be always ignored, independent of this option. Previous to version 1.2, empty lines was added before closing blocks, causing indented blocks to
         receive all empty lines. Since version 1.2, empty lines are added in the same level as the next child. This way is more consistent, since line breaks are put after indented blocks. You can play with the example page to discover more about this behavior. <strong class="never-break">Default: false</strong>.</p>
-    <p><code class="pretty">filter</code> (Function) &mdash; when provided, it executes the function for each line with 2 arguments, <code>String line, Number indent</code>. If the function returns <code>false</code>, it is completely ignored and removed. However, the function should not care about empty lines as they are treated in a different way. <strong class="never-break">Default: undefined</strong>.</p>
-    <p><code class="pretty">indentMultiple</code> (Number) &mdash; when provided, the number of spaces must be a multiple of this number to be a valid indent. <strong class="never-break">Default: null</strong>.</p>
+    <p><code class="pretty">filter</code> (Function) &mdash; when provided, it executes the function for each line with 2 arguments, <code>String line, Number indent</code>. If the function returns <code>false</code>, the line is completely ignored and removed. However, the function should not care about empty lines as they are treated in a different way. <strong class="never-break">Default: undefined</strong>.</p>
+    <p><code class="pretty">indentMultiple</code> (Number) &mdash; when provided, the number of spaces must be a multiple of this number to be a valid indentation. <strong class="never-break">Default: null</strong>.</p>
+    <p><code class="pretty">intercept</code> (Function) &mdash; when provided, it executes the function for each line with 4 arguments, <code>String line, Number originalIndent, Number lineIndex, Array lines</code>. If the function returns a number, it replaces the original indentation. The function is executed after the <code>filter</code> function and does not receive empty lines. <strong class="never-break">Default: undefined</strong>.
+        <br>The called function has a <code>this</code> object assigned, containing useful informations accessed through its fields:
+        <br>&nbsp;&bull; <code>sibling</code> (Number) with the indentation value of the sibling nodes;
+        <br>&nbsp;&bull; <code>parent</code> (Number) with the indentation of the parent node to unindent one level;
+        <br>&nbsp;&bull; <code>child</code> (Number) with the default indentation (given by <code>tabReplace</code> option) of a child node of the last appended node;
+        <br>&nbsp;&bull; <code>node</code> (Array) with the current parent node itself;
+        <br>&nbsp;&bull; <code>tree</code> (Array) with the resulting tree until that time.
+    </p>
     <p><code class="pretty">tabReplace</code> (String) &mdash; set this option to the string that will replace every TAB character (ASCII: 9). <strong class="never-break">Default: string with 4 whitespaces</strong>.</p>
     <p><code class="pretty">useHeading</code> (Boolean) &mdash; when true, tree omits each item before arrays of nodes and set those line as <code class="pretty">heading</code> attributes of nodes. The option itself is saved in the tree outter node as <code>useHeading</code> to remember the tree scheme. <strong class="never-break">Default: false</strong>.</p>
     
@@ -73,7 +81,7 @@
     this case will be fixed automatically because of the logic applied. The item <q>Parent</q>
     will end with 2 children, <q>Node 1</q> and <q>Node 2</q>. <q>Node 3</q>, in turn, is a
     sibling of <q>Parent</q>, with 3 spaces at start, and <q>Node 4</q> as its only child.</p>
-    <p>Specifically with te <code class="pretty">indentMultiple</code> option, the tree can be
+    <p>Specifically with the <code class="pretty">indentMultiple</code> option, the tree can be
     understood as the following structure:</p>
     <pre><code>Parent<br>    Node 1<br>    Node 2<br>___Node3<br>    Node 4</code></pre>
     <p>In other cases, when the option is not present, the following Error will be thrown:</p>
@@ -83,7 +91,7 @@
     <h2>Using the tree</h2>
     <p>After using the <code class="pretty">SowString</code> function with a valid
     string, you will receive the tree as a Javascript Array. Each String item of
-    this array is an item, and each Array item of this array represents a subnode
+    this array is a common item, and each Array item of this array represents a subnode
     with more strings and arrays. The items can be referred by their array indexes.</p>
 
     <p>Consider the following three:</p>
