@@ -27,3 +27,8 @@ The SowString born in this version.
 - Added: option "filter" now receives a function to filter lines.
 - Added: documentation now has the "filter" option.
 - Added: example now has a checkbox with an example for filter option.
+
+# Version 1.4.0 (contains: additions)
+- Added: option "intercept" now receives a function to intercept the indent calculation.
+- Added: documentation for "intercept" option.
+- Added: example now has a checkbox to show a bit of the intercept abilities.
