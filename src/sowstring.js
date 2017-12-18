@@ -1,6 +1,6 @@
 /**
- * Sow a string to crop a tree. This package transforms an indented string
- * into a Javascript array, where nodes are arrays and items are strings.
+ * This package transforms an indented string into a Javascript array,
+ * where nodes are arrays and items are strings.
  * 
  * @license <https://spdx.org/licenses/MIT.html> The MIT License
  * @contributor Eliakim Zacarias <https://github.com/ezaca>
@@ -14,26 +14,31 @@ function SowString(passedValue, passedOptions)
     if (options.tabReplace===undefined) options.tabReplace=String(' ').repeat(4)
     if (options.emptyLines===undefined) options.emptyLines=false
     if (options.useHeading===undefined) options.useHeading=false
+
     // Capture lines:
     var lines = String(passedValue)
     .replace(/\r\n?/g, '\n')
     .replace(/\t/g, options.tabReplace)
     .trimRight()
     .split('\n')
+
     // Make result:
     var result = []
     result.parent = null
     result.useHeading = options.useHeading
     var emptyLinesCache = []
+    var interceptCache = []
 
     function grow(parentArray, currentSpaces, lineIndex, level){
         var node, ln, indent, idx = lineIndex
         parentArray.isNode = true
         parentArray.level = level
         parentArray.indent = currentSpaces
+
         while(idx < lines.length)
         {
             ln = lines[idx].trimLeft()
+
             // Being the line empty,
             // we treat it as special case and continue to next line
             if (! ln.length)
@@ -51,6 +56,7 @@ function SowString(passedValue, passedOptions)
                 indent = Math.floor(indent / options.indentMultiple) * options.indentMultiple
                 ln = lines[idx].substr(indent)
             }
+
             // Have we a filter? Then execute the filter and if the answer is
             // false, ignore this line.
             if (options.filter && (false === options.filter.apply(null, [ln, indent])))
@@ -58,10 +64,28 @@ function SowString(passedValue, passedOptions)
                 idx++
                 continue
             }
+
+            // Have we an interceptor? Then execute it and get the possible new
+            // indent for the line.
+            if (options.intercept && (interceptCache[idx] === undefined))
+            {
+                let context = {
+                    sibling: currentSpaces,
+                    parent: parentArray.parent ? parentArray.parent.indent : 0,
+                    child: currentSpaces + options.tabReplace.length,
+                    node: parentArray,
+                    tree: result,
+                }
+                interceptCache[idx] = options.intercept.apply(context, [ln, indent, idx, lines])
+            }
+            if (options.intercept && (interceptCache[idx] !== undefined))
+                indent = interceptCache[idx]
+
             // Being the new indent lower than the old,
             // we reached the end of our node and return the control.
             if (currentSpaces > indent)
                 return idx
+
             // Being the new indent equal to the old,
             // we have a new sibling item.
             if (currentSpaces === indent)
@@ -72,9 +96,12 @@ function SowString(passedValue, passedOptions)
                 idx++
                 continue
             }
+
             // Being the new indent greater than the old,
             // we reached a new level and a new child node will be called.
-            if (parentArray.length && (parentArray[parentArray.length-1] instanceof Array) && (parentArray[parentArray.length-1].indent !== indent))
+            if (parentArray.length
+                && (parentArray[parentArray.length-1] instanceof Array)
+                && (parentArray[parentArray.length-1].indent !== indent))
             {
                 let parentExpectation = parentArray.indent
                 let siblingExpectation = parentArray[parentArray.length-1].indent
