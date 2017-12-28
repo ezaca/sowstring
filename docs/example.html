@@ -28,7 +28,7 @@
         <textarea id="in1" oninput="doTheMagic()">Loading content with Javascript...</textarea>
         <div><label><input type="checkbox" id="in_heading" onclick="doTheMagic()"> Use heading items?</label></div>
         <div><label><input type="checkbox" id="in_empty" onclick="doTheMagic()"> Include empty lines?</label></div>
-        <div><label><input type="checkbox" id="in_filter" onclick="doTheMagic()"> Ignore // and # lines?</label></div>
+        <div><label><input type="checkbox" id="in_filter" onclick="doTheMagic()"> Filter should ignore <code>//</code> and <code>#</code> lines?</label></div>
         <div><label><input type="checkbox" id="in_intercept" onclick="doTheMagic()"> Intercept lines to recognize commands :child, :parent and :sibling</label></div>
     </div>
     <div>
@@ -60,12 +60,13 @@ in1.value =
     Child Node 1
         Grandson Node 1
     Child Node 2
-    # Child Node 3
-    // Child Node 4
-    Child Node 5
+    # Child Node 3 (filter will ignore)
+    Child Node 4
 Parent Node 2
-// Parent Node 3
-This line will be child if intercepted :parent
+// Parent Node 3 (filter will ignore)
+This line will be child if intercepted :child
+    Normal child of previous item
+This will be child with previous if intercepted is active :auto
 `
 
 function doTheMagic(){
@@ -88,6 +89,8 @@ function doTheMagic(){
                     return this.parent
                 if (ln.match(/:sibling/i))
                     return this.sibling
+                if (ln.match(/:auto/i))
+                    return 'auto'
             }
         var tree = SowString(in1.value, options)
     }catch(e){

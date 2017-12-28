@@ -28,6 +28,7 @@ function SowString(passedValue, passedOptions)
     result.useHeading = options.useHeading
     var emptyLinesCache = []
     var interceptCache = []
+    var interceptSiblingsCache = []
 
     function grow(parentArray, currentSpaces, lineIndex, level){
         var node, ln, indent, idx = lineIndex
@@ -73,26 +74,41 @@ function SowString(passedValue, passedOptions)
                     sibling: currentSpaces,
                     parent: parentArray.parent ? parentArray.parent.indent : 0,
                     child: currentSpaces + options.tabReplace.length,
+                    auto: "auto",
                     node: parentArray,
                     tree: result,
                 }
                 interceptCache[idx] = options.intercept.apply(context, [ln, indent, idx, lines])
             }
             if (options.intercept && (interceptCache[idx] !== undefined))
+            {
                 indent = interceptCache[idx]
+                if (indent === 'auto')
+                {
+                    interceptSiblingsCache.push(ln)
+                    idx++
+                    continue
+                }
+            }
 
             // Being the new indent lower than the old,
             // we reached the end of our node and return the control.
             if (currentSpaces > indent)
+            {
+                parentArray.push(...interceptSiblingsCache)
+                interceptSiblingsCache = []
                 return idx
+            }
 
             // Being the new indent equal to the old,
             // we have a new sibling item.
             if (currentSpaces === indent)
             {
                 parentArray.push(...emptyLinesCache)
+                parentArray.push(...interceptSiblingsCache)
                 parentArray.push(ln)
                 emptyLinesCache = []
+                interceptSiblingsCache = []
                 idx++
                 continue
             }
@@ -118,6 +134,8 @@ function SowString(passedValue, passedOptions)
             idx = grow(node, indent, idx, level+1)
             node.pushIndex = parentArray.push(node)-1
         }
+        parentArray.push(...interceptSiblingsCache)
+        interceptSiblingsCache = []
         return idx
     }
 

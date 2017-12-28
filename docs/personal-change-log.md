@@ -32,3 +32,8 @@ The SowString born in this version.
 - Added: option "intercept" now receives a function to intercept the indent calculation.
 - Added: documentation for "intercept" option.
 - Added: example now has a checkbox to show a bit of the intercept abilities.
+
+# Version 1.5.0 (contains: update)
+- Updated: option "intercept" now supports a cache like empty lines, when returning "auto" string instead of a number.
+- Updated: documentation for "intercept" option.
+- Updated: example has an option to intercept and cache.
