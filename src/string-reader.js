@@ -12,6 +12,8 @@ module.exports = class StringReader {
         }
 
         this.lines = parsed.split('\n')
+        if ((this.lines.length === 1) && (! this.lines[0].trim()))
+            this.lines.pop()
         this.current = -1
     }
 

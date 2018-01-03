@@ -21,11 +21,11 @@ var createInterceptor = require ('./interceptor')
 
 function SowString(userGivenText, userGivenOptions)
 {
-    options = new Options (userGivenOptions)
-    lines = new StringReader (userGivenText, options)
-    result = new TreeBuilder (options)
-    indents = new IndentManager (options)
-    cache = new Cache (options)
+    var options = new Options (userGivenOptions)
+    var lines = new StringReader (userGivenText, options)
+    var result = new TreeBuilder (options)
+    var indents = new IndentManager (options)
+    var cache = new Cache (options)
 
     var leaf, node, interceptor, interceptorResult, hasIndentError
 
@@ -49,8 +49,7 @@ function SowString(userGivenText, userGivenOptions)
             continue
         }
 
-        leaf = new Leaf (lines.lineNum, lines.currentLine)
-        leaf.indent = lines.currentIndent
+        leaf = new Leaf (lines.lineNum, lines.currentIndent, lines.currentLine)
         leaf.level = indents.getLevelFromIndent (leaf.indent)
 
         // ----------------------------

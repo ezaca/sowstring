@@ -1,8 +1,797 @@
-!function(e){function n(r){if(t[r])return t[r].exports;var module=t[r]={i:r,l:!1,exports:{}};return e[r].call(module.exports,module,module.exports,n),module.l=!0,module.exports}var t={};n.m=e,n.c=t,n.d=function(exports,e,t){n.o(exports,e)||Object.defineProperty(exports,e,{configurable:!1,enumerable:!0,get:t})},n.n=function(module){var e=module&&module.__esModule?function(){return module.default}:function(){return module};return n.d(e,"a",e),e},n.o=function(e,n){return Object.prototype.hasOwnProperty.call(e,n)},n.p="",n(n.s=1)}([function(module,exports,e){"use strict";function n(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}var t=function(){function e(e,n){for(var t=0;t<n.length;t++){var r=n[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(n,t,r){return t&&e(n.prototype,t),r&&e(n,r),n}}(),Node=function(){function Node(e){n(this,Node),this.parent=parent,this.lineNum=e,this.level=void 0,this.heading=void 0,this.children=[]}return t(Node,[{key:"push",value:function(e){this.children.push(e)}},{key:"pop",value:function(){return this.children.pop()}},{key:"isNode",get:function(){return!0}}]),Node}(),Leaf=function(){function Leaf(e,t,r){n(this,Leaf),this.parent=parent,this.lineNum=e,this.level=void 0,this.indent=void 0,this.value=t}return t(Leaf,[{key:"toString",value:function(){return this.empty?"":this.indentedValue}},{key:"isNode",get:function(){return!1}},{key:"empty",get:function(){return!this.value.length}},{key:"indentedValue",get:function(){return String(" ").repeat(this.indent)+this.value}}]),Leaf}();module.exports={Node:Node,Leaf:Leaf}},function(module,exports,e){"use strict";module.exports=e(2)},function(module,exports,e){"use strict";function SowString(e,t){function o(){return f.cache&&cache.push(c),h.discard||f.cache}options=new n(t),lines=new l(e,options),result=new u(options),indents=new r(options),cache=new i(options);for(var c,a,h,f;lines.next();)if(f=null,h=null,lines.currentIsEmpty)c=new Leaf(lines.currentIndent,lines.lineNum,""),cache.push(c);else if(c=new Leaf(lines.lineNum,lines.currentLine),c.indent=lines.currentIndent,c.level=indents.getLevelFromIndent(c.indent),!(options.intercept&&(f={},h=s(c,indents,f),options.intercept.call(h),o())||(indents.isValidLevel(c.level)||indents.isValidIndent(c.indent))&&options.error&&(h||(f={},h=s(c,indents,f)),options.error.call(h),o()))){if(null===c.level){if(null===c.indent)throw new Error("Line has no valid indent or level value");c.level=indents.getLevelFromIndent(c.indent)}if(null===c.indent&&(c.level=indents.getIndentFromLevel(c.level)),indents.isValidLevel(c.level))if(indents.isSibling(c.level))cache.flush(result),result.push(c);else if(indents.isChild(c.level)){var a=new Node(lines.lineNum);a.level=indents.currentLevel,result.checkHeadingSetup(a),cache.flush(result),result.enter(a),indents.enter(c.indent),result.push(c)}else{if(!indents.isParent(c.level))throw new Error("SowString crashed (a node is not child, parent or sibling)");for(cache.flush(result);!indents.isLevel(c.level);)indents.leave(),result.leave();result.push(c)}else{if(!options.fixIndent)throw new Error("Invalid indent on line "+lines.lineNum);cache.push(c)}}return cache.flush(result),result.tree}function UnsowString(e,n){function t(e){if(e.parent&&r.each){var n=r.each(e,void 0);void 0!==n&&i.push(n)}else e.parent&&r.useHeading&&i.push(String(" ").repeat(e.parent.heading.indent)+e.heading.text);var l=!0,u=!1,s=void 0;try{for(var o,c=e.children[Symbol.iterator]();!(l=(o=c.next()).done);l=!0){var a=o.value;a instanceof Array?t(a):r.each?i.push(r.each(e,a)):a.trim()?i.push(String(" ").repeat(e.heading.indent)+a):i.push(a)}}catch(e){u=!0,s=e}finally{try{!l&&c.return&&c.return()}finally{if(u)throw s}}}if(!e instanceof Array)throw new Error("Invalid tree to unsow (argument 1)");var r=Object(n);"function"!=typeof r.each&&(r.each=null),void 0===r.useHeading&&(r.useHeading=Boolean(e.options.useHeading));var i=[];return t(e),i.join("\n")}/**
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Node = function () {
+    function Node(lineNum) {
+        _classCallCheck(this, Node);
+
+        this.lineNum = lineNum;
+        this.level = undefined;
+        this.heading = undefined;
+        this.children = [];
+    }
+
+    _createClass(Node, [{
+        key: 'push',
+        value: function push(item) {
+            this.children.push(item);
+        }
+    }, {
+        key: 'pop',
+        value: function pop() {
+            return this.children.pop();
+        }
+    }, {
+        key: 'isNode',
+        get: function get() {
+            return true;
+        }
+    }]);
+
+    return Node;
+}();
+
+var Leaf = function () {
+    function Leaf(lineNum, indent, text) {
+        _classCallCheck(this, Leaf);
+
+        this.lineNum = lineNum;
+        this.level = undefined;
+        this.indent = indent;
+        this.text = text;
+    }
+
+    _createClass(Leaf, [{
+        key: 'toString',
+        value: function toString() {
+            if (this.empty) return '';
+            return this.indentedValue;
+        }
+    }, {
+        key: 'isNode',
+        get: function get() {
+            return false;
+        }
+    }, {
+        key: 'empty',
+        get: function get() {
+            return !this.value.length;
+        }
+    }, {
+        key: 'indentedValue',
+        get: function get() {
+            return String(' ').repeat(this.indent) + this.value;
+        }
+    }]);
+
+    return Leaf;
+}();
+
+module.exports = {
+    Node: Node,
+    Leaf: Leaf
+};
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(2);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
  * This package transforms an indented string into a Javascript array,
  * where nodes are arrays and items are strings.
  * 
  * @license <https://spdx.org/licenses/MIT.html> The MIT License
  * @contributor Eliakim Zacarias <https://github.com/ezaca>
  */
-var Node,Leaf,n=e(3),t=e(0);Node=t.Node,Leaf=t.Leaf;var r=e(4),i=e(5),l=e(6),u=e(7),s=e(8);SowString.Node=Node,SowString.Leaf=Leaf,"undefined"!=typeof window&&(window.SowString=SowString,window.UnsowString=UnsowString),void 0!==module&&module.exports&&(module.exports.SowString=SowString,module.exports.UnsowString=UnsowString)},function(module,exports,e){"use strict";function n(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}module.exports=function e(t){n(this,e);var r=t||{};if(this.useHeading=!!r.useHeading,this.emptyLines=!!r.emptyLines,this.fixIndent=!!r.fixIndent,this.tabReplace="number"==typeof r.tabReplace?String(" ").repeat(r.tabReplace):String(r.tabReplace||"    "),"function"==typeof r.intercept)this.intercept=r.intercept;else if(r.intercept)throw new TypeError("Option `intercept` must be a function");if("function"==typeof r.error)this.error=r.error;else if(r.error)throw new TypeError("Option `error` must be a function")}},function(module,exports,e){"use strict";function n(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}var t=function(){function e(e,n){for(var t=0;t<n.length;t++){var r=n[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(n,t,r){return t&&e(n.prototype,t),r&&e(n,r),n}}();module.exports=function(){function e(t){n(this,e),this.options=t,this.levels=[],this.enter(0)}return t(e,[{key:"enter",value:function(e){if(e<this.greaterIndent)throw new Error("SowString has messed up its indentation register due to internal errors");this.levels.push(e)}},{key:"leave",value:function(){this.levels.pop()}},{key:"isValidIndent",value:function(e){if(null===e)return!1;if(e>this.greaterIndent)return!0;var n=void 0;for(n=this.levels.length-1;n>=0;n--)if(e===this.levels[n])return!0;return!1}},{key:"isValidLevel",value:function(e){return null!==e&&(e>=0&&e<=this.levels.length)}},{key:"getIndentOf",value:function(e){if(e<0)throw new ReferenceError("SowString trees do not have negative levels");return e>=this.levels.length?this.greaterIndent+1:this.levels[e]}},{key:"getLevelFromIndent",value:function(e){if(e>this.greaterIndent)return this.levels.length;var n=0;for(n=this.levels.length-1;n>=0;n--)if(e===this.levels[n])return n;return null}},{key:"getIndentFromLevel",value:function(e){return e<0?0:e>=this.levels.length?this.greaterIndent+1:this.levels[e]}},{key:"isLevel",value:function(e){return this.currentLevel===e}},{key:"isSibling",value:function(e){return this.currentLevel===e}},{key:"isChild",value:function(e){return e>this.currentLevel}},{key:"isParent",value:function(e){return e>=0&&e<this.currentLevel}},{key:"currentLevel",get:function(){return this.levels.length-1}},{key:"greaterIndent",get:function(){return this.levels[this.levels.length-1]||0}},{key:"childLevel",get:function(){return this.levels.length}},{key:"parentLevel",get:function(){return this.levels.length-2}}]),e}()},function(module,exports,e){"use strict";function n(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}var t=function(){function e(e,n){for(var t=0;t<n.length;t++){var r=n[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(n,t,r){return t&&e(n.prototype,t),r&&e(n,r),n}}();module.exports=function(){function e(t){n(this,e),this.options,this.items=[]}return t(e,[{key:"push",value:function(e){this.items.push(e)}},{key:"flush",value:function(e){var n,t=!0,r=!1,i=void 0;try{for(var l,u=this.items[Symbol.iterator]();!(t=(l=u.next()).done);t=!0)n=l.value,e.push(n)}catch(e){r=!0,i=e}finally{try{!t&&u.return&&u.return()}finally{if(r)throw i}}this.length=0}},{key:"flushExceptTrailingWhitespaces",value:function(e){var n,t=0;for(n=this.items.length-1;n>=0&&this.items.empty;n--)t++;for(n=0;n<this.items.length-t;n++)e.push(this.items.shift())}}]),e}()},function(module,exports,e){"use strict";function n(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}var t=function(){function e(e,n){for(var t=0;t<n.length;t++){var r=n[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(n,t,r){return t&&e(n.prototype,t),r&&e(n,r),n}}();module.exports=function(){function e(t,r){n(this,e);var i=String(t||"").replace(/\r\n?/g,"\n").replace(/\t/g,r.tabReplace);r.emptyLines||(i=i.replace(/\n\n+/g,"\n").replace(/^\n+/g,"").trimRight()),this.lines=i.split("\n"),this.current=-1}return t(e,[{key:"prev",value:function(){return--this.current>=0}},{key:"next",value:function(){return this.current++,!this.eof}},{key:"isEmpty",value:function(e){return!this.lines[e].trimLeft().length}},{key:"getLine",value:function(e){return this.lines[e].trimLeft()}},{key:"getIndent",value:function(e){var n=String(this.lines[e]||"");n.trimLeft();return this.before.length-this.after.length}},{key:"eof",get:function(){return this.current>=this.lines.length}},{key:"currentLine",get:function(){return this.getLine(this.current)}},{key:"currentIndent",get:function(){return this.getIndent(this.current)}},{key:"currentIsEmpty",get:function(){return!this.lines[this.current].trimLeft().length}},{key:"lineNum",get:function(){return this.eof||this.current<0?null:this.current+1}}]),e}()},function(module,exports,e){"use strict";function n(e,n){if(!(e instanceof n))throw new TypeError("Cannot call a class as a function")}var t=function(){function e(e,n){for(var t=0;t<n.length;t++){var r=n[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(n,t,r){return t&&e(n.prototype,t),r&&e(n,r),n}}(),Node=e(0).Node;module.exports=function(){function e(t){n(this,e),this.options=t,this.tree=new Node(1),this.tree.parent=null,this.tree.options={useHeading:t.useHeading},this.current=this.tree}return t(e,[{key:"checkHeadingSetup",value:function(e){if(this.options.useHeading){var n=this.current.pop();n||console.error("SowString Internal Error: there is no node to use as heading (but should be there), using undefined"),e.heading=n}}},{key:"enter",value:function(e){e.parent=this.current,this.push(e),this.current=e}},{key:"leave",value:function(){this.current=this.current.parent}},{key:"push",value:function(e){e.parent=this.current,this.current.push(e)}}]),e}()},function(module,exports,e){"use strict";module.exports=function(e,n,t){var r=e.indent,i=e.level;return{get startIndent(){return r},get startLevel(){return i},get text(){return e.text},set text(n){e.text=n},get level(){return e.level},set level(r){e.level=r,t.cache=!1,t.discard=!1,e.indent=null,n.isValidLevel(r)&&(e.indent=n.getIndentFromLevel(r))},get indent(){return e.indent},set indent(r){e.indent=r,t.cache=!1,t.discard=!1,e.level=null,e.indent=n.getLevelFromIndent(r)},setProp:function(n,t){if(["constructor","prototype","indent","level","lineNum","parent","children"].indexOf(n)>=0)throw new Error('The field name "'+n+'" is reserved on SowString nodes');e[n]=t},getProp:function(n){return e[n]},setChild:function(){e.level=n.childLevel,e.indent=null,t.cache=!1,t.discard=!1},setParent:function(){e.level=n.parentLevel,e.level<0&&(e.level=0),e.indent=null,t.cache=!1,t.discard=!1},setSibling:function(){e.level=n.currentLevel,e.indent=null,t.cache=!1,t.discard=!1},setSiblingOfNext:function(){t.cache=!0,e.level=null,e.indent=null,t.discard=!1},touchIndent:function(){t.touchIndent=!0},discard:function(){t.discard=!0,t.cache=!1,e.level=null,e.indent=null},hasErrors:function(){var t=e.level;return null===t&&(t=n.getLevelFromIndent(e.indent)),n.isValidLevel(this.level)}}}}]);
+
+var Options = __webpack_require__(3);
+var Node, Leaf;
+{
+    var Items = __webpack_require__(0);
+    Node = Items.Node;
+    Leaf = Items.Leaf;
+}
+var IndentManager = __webpack_require__(4);
+var Cache = __webpack_require__(5);
+var StringReader = __webpack_require__(6);
+var TreeBuilder = __webpack_require__(7);
+var createInterceptor = __webpack_require__(8);
+
+function SowString(userGivenText, userGivenOptions) {
+    var options = new Options(userGivenOptions);
+    var lines = new StringReader(userGivenText, options);
+    var result = new TreeBuilder(options);
+    var indents = new IndentManager(options);
+    var cache = new Cache(options);
+
+    var leaf, node, interceptor, interceptorResult, hasIndentError;
+
+    function discardOrCache() {
+        if (interceptorResult.cache) cache.push(leaf);
+        return interceptor.discard || interceptorResult.cache;
+    }
+
+    while (lines.next()) {
+        interceptorResult = null;
+        interceptor = null;
+
+        // ----------------------------
+        // Empty nodes
+        // ----------------------------
+        if (lines.currentIsEmpty) {
+            leaf = new Leaf(lines.currentIndent, lines.lineNum, '');
+            cache.push(leaf);
+            continue;
+        }
+
+        leaf = new Leaf(lines.lineNum, lines.currentIndent, lines.currentLine);
+        leaf.level = indents.getLevelFromIndent(leaf.indent);
+
+        // ----------------------------
+        // Interceptor
+        // ----------------------------
+        if (options.intercept) {
+            interceptorResult = {};
+            interceptor = createInterceptor(leaf, indents, interceptorResult);
+            options.intercept.call(interceptor);
+            if (discardOrCache()) continue;
+        }
+
+        hasIndentError = indents.isValidLevel(leaf.level) || indents.isValidIndent(leaf.indent);
+
+        // ----------------------------
+        // Indent errors
+        // ----------------------------
+        if (hasIndentError && options.error) {
+            if (!interceptor) {
+                interceptorResult = {};
+                interceptor = createInterceptor(leaf, indents, interceptorResult);
+            }
+            options.error.call(interceptor);
+            if (discardOrCache()) continue;
+        }
+
+        if (leaf.level === null) {
+            if (leaf.indent === null) throw new Error('Line has no valid indent or level value');
+            leaf.level = indents.getLevelFromIndent(leaf.indent);
+        }
+
+        if (leaf.indent === null) {
+            leaf.level = indents.getIndentFromLevel(leaf.level);
+        }
+
+        if (!indents.isValidLevel(leaf.level)) {
+            if (!options.fixIndent) throw new Error('Invalid indent on line ' + lines.lineNum);
+            cache.push(leaf);
+            continue;
+        }
+
+        // ----------------------------
+        // Node passed
+        // ----------------------------
+
+        if (indents.isSibling(leaf.level)) {
+            cache.flush(result);
+            result.push(leaf);
+            continue;
+        } else if (indents.isChild(leaf.level)) {
+            var node = new Node(lines.lineNum);
+            node.level = indents.currentLevel;
+            result.checkHeadingSetup(node);
+            cache.flush(result);
+            result.enter(node);
+            indents.enter(leaf.indent);
+            result.push(leaf);
+            continue;
+        } else if (indents.isParent(leaf.level)) {
+            cache.flush(result);
+            while (!indents.isLevel(leaf.level)) {
+                indents.leave();
+                result.leave();
+            }
+            result.push(leaf);
+        } else throw new Error('SowString crashed (a node is not child, parent or sibling)');
+    }
+
+    cache.flush(result);
+    return result.tree;
+}
+
+function UnsowString(passedTree, passedOptions) {
+    if (!passedTree instanceof Array) throw new Error('Invalid tree to unsow (argument 1)');
+    var options = Object(passedOptions);
+    if (typeof options.each !== 'function') options.each = null;
+    if (typeof options.useHeading === 'undefined') options.useHeading = Boolean(passedTree.options.useHeading);
+    var result = [];
+
+    function crop(node) {
+        if (node.parent && options.each) {
+            var value = options.each(node, undefined);
+            if (value !== undefined) result.push(value);
+        } else if (node.parent && options.useHeading) result.push(String(' ').repeat(node.parent.heading.indent) + node.heading.text);
+
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = node.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var item = _step.value;
+
+                if (item instanceof Node) crop(item);else if (options.each) result.push(options.each(node, item));else if (!item.text.trim()) result.push(item.text);else result.push(String('  ').repeat(item.level) + item.text);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    }
+
+    crop(passedTree);
+    return result.join('\n');
+}
+
+SowString.Node = Node;
+SowString.Leaf = Leaf;
+
+if (typeof window !== "undefined") {
+    window.SowString = SowString;
+    window.UnsowString = UnsowString;
+}
+if (typeof module !== "undefined" && module.exports) {
+    module.exports.SowString = SowString;
+    module.exports.UnsowString = UnsowString;
+}
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function Options(givenOptions) {
+    _classCallCheck(this, Options);
+
+    var userOptions = givenOptions || {};
+    this.useHeading = !!userOptions.useHeading;
+    this.emptyLines = !!userOptions.emptyLines;
+    this.fixIndent = !!userOptions.fixIndent;
+
+    if (typeof userOptions.tabReplace === 'number') this.tabReplace = String(' ').repeat(userOptions.tabReplace);else this.tabReplace = String(userOptions.tabReplace || '    ');
+
+    if (typeof userOptions.intercept === 'function') this.intercept = userOptions.intercept;else if (userOptions.intercept) throw new TypeError('Option `intercept` must be a function');
+
+    if (typeof userOptions.error === 'function') this.error = userOptions.error;else if (userOptions.error) throw new TypeError('Option `error` must be a function');
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+    function IndentManager(options) {
+        _classCallCheck(this, IndentManager);
+
+        this.options = options;
+        this.levels = [];
+        this.enter(0);
+    }
+
+    _createClass(IndentManager, [{
+        key: 'enter',
+        value: function enter(indent) {
+            if (indent < this.greaterIndent) throw new Error('SowString has messed up its indentation register due to internal errors');
+            this.levels.push(indent);
+        }
+    }, {
+        key: 'leave',
+        value: function leave() {
+            this.levels.pop();
+        }
+    }, {
+        key: 'isValidIndent',
+        value: function isValidIndent(indent) {
+            if (indent === null) return false;
+            if (indent > this.greaterIndent) return true;
+            var i = void 0;
+            for (i = this.levels.length - 1; i >= 0; i--) {
+                if (indent === this.levels[i]) return true;
+            }
+            return false;
+        }
+    }, {
+        key: 'isValidLevel',
+        value: function isValidLevel(level) {
+            if (level === null) return false;
+            return level >= 0 && level <= this.levels.length;
+        }
+    }, {
+        key: 'getIndentOf',
+        value: function getIndentOf(level) {
+            if (level < 0) throw new ReferenceError('SowString trees do not have negative levels');
+            if (level >= this.levels.length) return this.greaterIndent + 1;
+            return this.levels[level];
+        }
+    }, {
+        key: 'getLevelFromIndent',
+        value: function getLevelFromIndent(indent) {
+            if (indent > this.greaterIndent) return this.levels.length;
+            var i = 0;
+            for (i = this.levels.length - 1; i >= 0; i--) {
+                if (indent === this.levels[i]) return i;
+            }
+            return null;
+        }
+    }, {
+        key: 'getIndentFromLevel',
+        value: function getIndentFromLevel(level) {
+            if (level < 0) return 0;
+            if (level >= this.levels.length) return this.greaterIndent + 1;
+            return this.levels[level];
+        }
+    }, {
+        key: 'isLevel',
+        value: function isLevel(level) {
+            return this.currentLevel === level;
+        }
+    }, {
+        key: 'isSibling',
+        value: function isSibling(level) {
+            return this.currentLevel === level;
+        }
+    }, {
+        key: 'isChild',
+        value: function isChild(level) {
+            return level > this.currentLevel;
+        }
+    }, {
+        key: 'isParent',
+        value: function isParent(level) {
+            return level >= 0 && level < this.currentLevel;
+        }
+    }, {
+        key: 'currentLevel',
+        get: function get() {
+            return this.levels.length - 1;
+        }
+    }, {
+        key: 'greaterIndent',
+        get: function get() {
+            return this.levels[this.levels.length - 1] || 0;
+        }
+    }, {
+        key: 'childLevel',
+        get: function get() {
+            return this.levels.length;
+        }
+    }, {
+        key: 'parentLevel',
+        get: function get() {
+            return this.levels.length - 2;
+        }
+    }]);
+
+    return IndentManager;
+}();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+    function Cache(options) {
+        _classCallCheck(this, Cache);
+
+        this.options;
+        this.items = [];
+    }
+
+    _createClass(Cache, [{
+        key: "push",
+        value: function push(item) {
+            this.items.push(item);
+        }
+    }, {
+        key: "flush",
+        value: function flush(treeBuilder) {
+            var item;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = this.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    item = _step.value;
+
+                    treeBuilder.push(item);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+
+            this.length = 0;
+        }
+    }, {
+        key: "flushExceptTrailingWhitespaces",
+        value: function flushExceptTrailingWhitespaces(treeBuilder) {
+            var i,
+                countTrailing = 0;
+            for (i = this.items.length - 1; i >= 0; i--) {
+                if (!this.items.empty) break;
+                countTrailing++;
+            }
+            for (i = 0; i < this.items.length - countTrailing; i++) {
+                treeBuilder.push(this.items.shift());
+            }
+        }
+    }]);
+
+    return Cache;
+}();
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = function () {
+    function StringReader(plainText, options) {
+        _classCallCheck(this, StringReader);
+
+        var parsed = String(plainText || '').replace(/\r\n?/g, '\n').replace(/\t/g, options.tabReplace);
+
+        if (!options.emptyLines) {
+            parsed = parsed.replace(/\n\n+/g, '\n').replace(/^\n+/g, '').trimRight();
+        }
+
+        this.lines = parsed.split('\n');
+        if (this.lines.length === 1 && !this.lines[0].trim()) this.lines.pop();
+        this.current = -1;
+    }
+
+    _createClass(StringReader, [{
+        key: 'prev',
+        value: function prev() {
+            this.current--;
+            return this.current >= 0;
+        }
+    }, {
+        key: 'next',
+        value: function next() {
+            this.current++;
+            return !this.eof;
+        }
+    }, {
+        key: 'isEmpty',
+        value: function isEmpty(index) {
+            return !this.lines[index].trimLeft().length;
+        }
+    }, {
+        key: 'getLine',
+        value: function getLine(index) {
+            return this.lines[index].trimLeft();
+        }
+    }, {
+        key: 'getIndent',
+        value: function getIndent(index) {
+            // TO-DO: This is simpler than RegExp, but what about performance?
+            var before = String(this.lines[index] || '');
+            var after = before.trimLeft();
+            return before.length - after.length;
+        }
+    }, {
+        key: 'eof',
+        get: function get() {
+            return this.current >= this.lines.length;
+        }
+    }, {
+        key: 'currentLine',
+        get: function get() {
+            return this.getLine(this.current);
+        }
+    }, {
+        key: 'currentIndent',
+        get: function get() {
+            return this.getIndent(this.current);
+        }
+    }, {
+        key: 'currentIsEmpty',
+        get: function get() {
+            return !this.lines[this.current].trimLeft().length;
+        }
+    }, {
+        key: 'lineNum',
+        get: function get() {
+            if (this.eof || this.current < 0) return null;
+            return this.current + 1;
+        }
+    }]);
+
+    return StringReader;
+}();
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Node = __webpack_require__(0).Node;
+
+module.exports = function () {
+    function TreeBuilder(options) {
+        _classCallCheck(this, TreeBuilder);
+
+        this.options = options;
+        this.tree = new Node(1);
+        this.tree.parent = null;
+        this.tree.options = {
+            useHeading: options.useHeading
+        };
+        this.current = this.tree;
+    }
+
+    _createClass(TreeBuilder, [{
+        key: 'checkHeadingSetup',
+        value: function checkHeadingSetup(node) {
+            if (!this.options.useHeading) return;
+            var heading = this.current.pop();
+            if (!heading) console.error('SowString Internal Error: there is no node to use as heading (but should be there), using undefined');
+            node.heading = heading;
+        }
+    }, {
+        key: 'enter',
+        value: function enter(node) {
+            node.parent = this.current;
+            this.push(node);
+            this.current = node;
+        }
+    }, {
+        key: 'leave',
+        value: function leave() {
+            this.current = this.current.parent;
+        }
+    }, {
+        key: 'push',
+        value: function push(leaf) {
+            leaf.parent = this.current;
+            this.current.push(leaf);
+        }
+    }]);
+
+    return TreeBuilder;
+}();
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function createInterceptor(leaf, indents, result) {
+    var originalIndent = leaf.indent;
+    var originalLevel = leaf.level;
+
+    return {
+        get startIndent() {
+            return originalIndent;
+        },
+        get startLevel() {
+            return originalLevel;
+        },
+
+        get text() {
+            return leaf.text;
+        },
+        set text(text) {
+            leaf.text = text;
+        },
+
+        get level() {
+            return leaf.level;
+        },
+        set level(level) {
+            leaf.level = level;
+            result.cache = false;
+            result.discard = false;
+            leaf.indent = null;
+            if (indents.isValidLevel(level)) leaf.indent = indents.getIndentFromLevel(level);
+        },
+
+        get indent() {
+            return leaf.indent;
+        },
+        set indent(indent) {
+            leaf.indent = indent;
+            result.cache = false;
+            result.discard = false;
+            leaf.level = null;
+            leaf.indent = indents.getLevelFromIndent(indent);
+        },
+
+        setProp: function setProp(name, value) {
+            if (['constructor', 'prototype', 'indent', 'level', 'lineNum', 'parent', 'children'].indexOf(name) >= 0) throw new Error('The field name "' + name + '" is reserved on SowString nodes');
+            leaf[name] = value;
+        },
+        getProp: function getProp(name) {
+            return leaf[name];
+        },
+        setChild: function setChild() {
+            leaf.level = indents.childLevel;
+            leaf.indent = null;
+            result.cache = false;
+            result.discard = false;
+        },
+        setParent: function setParent() {
+            leaf.level = indents.parentLevel;
+            if (leaf.level < 0) leaf.level = 0;
+            leaf.indent = null;
+            result.cache = false;
+            result.discard = false;
+        },
+        setSibling: function setSibling() {
+            leaf.level = indents.currentLevel;
+            leaf.indent = null;
+            result.cache = false;
+            result.discard = false;
+        },
+        setSiblingOfNext: function setSiblingOfNext() {
+            result.cache = true;
+            leaf.level = null;
+            leaf.indent = null;
+            result.discard = false;
+        },
+        touchIndent: function touchIndent() {
+            result.touchIndent = true;
+        },
+        discard: function discard() {
+            result.discard = true;
+            result.cache = false;
+            leaf.level = null;
+            leaf.indent = null;
+        },
+        hasErrors: function hasErrors() {
+            var level = leaf.level;
+            if (level === null) level = indents.getLevelFromIndent(leaf.indent);
+            return indents.isValidLevel(this.level);
+        }
+    };
+};
+
+/***/ })
+/******/ ]);
+//# sourceMappingURL=sowstring.js.map

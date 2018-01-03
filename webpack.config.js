@@ -33,10 +33,10 @@ module.exports = {
         // ]),
         // Avoid publishing files when compilation fails
         new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-          compress: { warnings: false },
-          mangle: { except: ['module', 'exports', 'SowString', 'UnsowString', 'Node', 'Leaf'] }
-        })
+        // new webpack.optimize.UglifyJsPlugin({
+        //   compress: { warnings: false },
+        //   mangle: { except: ['module', 'exports', 'SowString', 'UnsowString', 'Node', 'Leaf'] }
+        // })
     ],
     stats: {
         // Nice colored output

@@ -18,10 +18,10 @@ class Node {
 }
 
 class Leaf {
-    constructor (lineNum, text, indent) {
+    constructor (lineNum, indent, text) {
         this.lineNum = lineNum
         this.level = undefined
-        this.indent = undefined
+        this.indent = indent
         this.text = text
     }
 
