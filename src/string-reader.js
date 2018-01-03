@@ -1,17 +1,17 @@
 module.exports = class StringReader {
     constructor (plainText, options) {
-        let parsed = String(plainText)
+        let parsed = String(plainText || '')
         .replace(/\r\n?/g, '\n')
         .replace(/\t/g, options.tabReplace)
-        .split('\n')
 
         if (! options.emptyLines)
         {
-            this.lines = parsed.replace(/\n\n+/g, '\n')
+            parsed = parsed.replace(/\n\n+/g, '\n')
             .replace(/^\n+/g, '')
             .trimRight()
         }
 
+        this.lines = parsed.split('\n')
         this.current = -1
     }
 
@@ -59,6 +59,6 @@ module.exports = class StringReader {
         // TO-DO: This is simpler than RegExp, but what about performance?
         let before = String (this.lines [index] || '')
         let after = before.trimLeft()
-        return this.before.length - this.after.length
+        return before.length - after.length
     }
 }

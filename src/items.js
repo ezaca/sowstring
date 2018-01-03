@@ -1,6 +1,5 @@
 class Node {
     constructor (lineNum) {
-        this.parent = parent
         this.lineNum = lineNum
         this.level = undefined
         this.heading = undefined
@@ -19,12 +18,11 @@ class Node {
 }
 
 class Leaf {
-    constructor (lineNum, value, indent) {
-        this.parent = parent
+    constructor (lineNum, text, indent) {
         this.lineNum = lineNum
         this.level = undefined
         this.indent = undefined
-        this.value = value
+        this.text = text
     }
 
     get isNode () { return false }

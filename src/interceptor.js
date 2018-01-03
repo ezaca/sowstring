@@ -7,25 +7,25 @@ module.exports = function createInterceptor (leaf, indents, result) {
         get startLevel () { return originalLevel },
 
         get text () { return leaf.text },
-        set text (value) { leaf.text = value },
+        set text (text) { leaf.text = text },
 
         get level () { return leaf.level },
-        set level (value) {
-            leaf.level = value
+        set level (level) {
+            leaf.level = level
             result.cache = false
             result.discard = false
             leaf.indent = null
-            if (indents.isValidLevel (value))
-                leaf.indent = indents.getIndentFromLevel (value)
+            if (indents.isValidLevel (level))
+                leaf.indent = indents.getIndentFromLevel (level)
         },
 
         get indent () { return leaf.indent },
-        set indent (value) {
-            leaf.indent = value
+        set indent (indent) {
+            leaf.indent = indent
             result.cache = false
             result.discard = false
             leaf.level = null
-            leaf.indent = indents.getLevelFromIndent (value)
+            leaf.indent = indents.getLevelFromIndent (indent)
         },
 
         setProp (name, value) {

@@ -7,7 +7,12 @@
  */
 
 var Options = require ('./options')
-var {Node, Leaf} = require ('./items')
+var Node, Leaf
+{
+    let Items = require ('./items')
+    Node = Items.Node
+    Leaf = Items.Leaf
+}
 var IndentManager = require ('./indents')
 var Cache = require ('./cache')
 var StringReader = require('./string-reader')
@@ -154,16 +159,16 @@ function UnsowString(passedTree, passedOptions)
 
         for(var item of node.children)
         {
-            if(item instanceof Array)
+            if(item instanceof Node)
                 crop(item)
             else
             if (options.each)
                 result.push(options.each(node, item))
             else
-            if (! item.trim())
-                result.push(item)
+            if (! item.text.trim())
+                result.push(item.text)
             else
-                result.push(String(' ').repeat(node.heading.indent) + item)
+                result.push(String('  ').repeat(item.level) + item.text)
         }
     }
 
@@ -171,17 +176,16 @@ function UnsowString(passedTree, passedOptions)
     return result.join('\n')
 }
 
+SowString.Node = Node
+SowString.Leaf = Leaf
+
 if (typeof window !== "undefined")
 {
     window.SowString = SowString
     window.UnsowString = UnsowString
-    window.Node = Node
-    window.Leaf = Leaf
 }
 if ((typeof module !== "undefined") && (module.exports))
 {
     module.exports.SowString = SowString
     module.exports.UnsowString = UnsowString
-    module.exports.Node = Node
-    module.exports.Leaf = Leaf
 }

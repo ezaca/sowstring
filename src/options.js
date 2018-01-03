@@ -1,5 +1,6 @@
 module.exports = class Options {
-    constructor(userOptions) {
+    constructor(givenOptions) {
+        var userOptions = givenOptions || {}
         this.useHeading = !! userOptions.useHeading
         this.emptyLines = !! userOptions.emptyLines
         this.fixIndent = !! userOptions.fixIndent

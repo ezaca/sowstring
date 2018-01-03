@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Parse intended strings",
   "homepage": "https://github.com/ezaca/sowstring#readme",
-  "main": "dist/sowstring.js",
+  "main": "src/index.js",
   "license": "MIT",
   "author": "Eliakim Zacarias",
   "contributors": [
