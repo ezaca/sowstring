@@ -1,9 +1,9 @@
 {
   "name": "sowstring",
-  "version": "1.5.0",
-  "description": "A tiny pure Javascript library to sow indented strings and harvest tree arrays.",
+  "version": "2.0.0",
+  "description": "Parse intended strings",
   "homepage": "https://github.com/ezaca/sowstring#readme",
-  "main": "dist/sowstring.min.js",
+  "main": "dist/sowstring.js",
   "license": "MIT",
   "author": "Eliakim Zacarias",
   "contributors": [
@@ -18,17 +18,24 @@
     "indented",
     "string",
     "tree",
-    "javascript",
-    "browser",
-    "node"
+    "javascript"
   ],
   "bugs": {
     "url": "https://github.com/ezaca/sowstring/issues"
   },
   "scripts": {
-    "build": "./node_modules/.bin/uglifyjs --lint --verbose --mangle --reserved 'SowString,UnsowString,exports' --output=dist/sowstring.min.js -- src/sowstring.js"
+    "build": "npx webpack",
+    "watch": "npx webpack --watch"
   },
   "devDependencies": {
-    "uglify-js": "^3.0.27"
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "copy-webpack-plugin": "^4.2.3",
+    "webpack": "^3.8.1"
+  },
+  "babel": {
+    "presets": ["env"]
   }
 }
