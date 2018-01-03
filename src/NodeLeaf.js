@@ -1,3 +1,5 @@
+var NodeToString = require ('./toString')
+
 class Node {
     constructor (lineNum) {
         this.lineNum = lineNum
@@ -14,6 +16,22 @@ class Node {
 
     pop () {
         return this.children.pop ()
+    }
+
+    *[Symbol.iterator] () {
+        var item
+        for (item of this.children)
+            yield item
+    }
+
+    *entries () {
+        var item, index
+        for ([item, index] of this.children.entries())
+            yield [item, index]
+    }
+
+    toString (options) {
+        return NodeToString.apply (this, [options || {}])
     }
 }
 

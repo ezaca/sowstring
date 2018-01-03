@@ -1,1 +1,1 @@
-module.exports = require('./sowstring')
+module.exports = require('./SowString')

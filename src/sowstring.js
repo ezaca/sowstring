@@ -6,18 +6,18 @@
  * @contributor Eliakim Zacarias <https://github.com/ezaca>
  */
 
-var Options = require ('./options')
+var Options = require ('./Options')
 var Node, Leaf
 {
-    let Items = require ('./items')
+    let Items = require ('./NodeLeaf')
     Node = Items.Node
     Leaf = Items.Leaf
 }
-var IndentManager = require ('./indents')
+var IndentManager = require ('./IndentManager')
 var Cache = require ('./cache')
-var StringReader = require('./string-reader')
-var TreeBuilder = require ('./tree-builder')
-var createInterceptor = require ('./interceptor')
+var StringReader = require('./StringReader')
+var TreeBuilder = require ('./TreeBuilder')
+var createInterceptor = require ('./createInterceptor')
 
 function SowString(userGivenText, userGivenOptions)
 {
