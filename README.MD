@@ -1,5 +1,7 @@
 # Sow String
 
+This version is old and version 2.0 will be entirely rewritten! It is already stable, but will not receive updates anymore.
+
 This package contains a function to transform a string with good indentation to a Javascript array, where nodes with subnodes are array objects and nodes with no subnodes are string literals.
 
 [See documentation](https://ezaca.github.io/sowstring/docs/) or TL&DR below.
