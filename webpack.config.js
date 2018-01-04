@@ -10,7 +10,7 @@ var dir_js = path.resolve(__dirname, 'src');
 var dir_build = path.resolve(__dirname, 'dist');
 
 module.exports = {
-    entry: path.resolve(dir_js, 'index.js'),
+    entry: ['babel-polyfill', path.resolve(dir_js, 'index.js')],
     output: {
         path: dir_build,
         filename: 'sowstring.js'
@@ -33,10 +33,10 @@ module.exports = {
         // ]),
         // Avoid publishing files when compilation fails
         new webpack.NoEmitOnErrorsPlugin(),
-        // new webpack.optimize.UglifyJsPlugin({
-        //   compress: { warnings: false },
-        //   mangle: { except: ['module', 'exports', 'SowString', 'UnsowString', 'Node', 'Leaf'] }
-        // })
+        new webpack.optimize.UglifyJsPlugin({
+          compress: { warnings: false },
+          mangle: { except: ['module', 'exports', 'SowString', 'UnsowString', 'Node', 'Leaf'] }
+        })
     ],
     stats: {
         // Nice colored output

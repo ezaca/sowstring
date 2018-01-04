@@ -68,10 +68,6 @@ module.exports = function createInterceptor (leaf, indents, result) {
             result.discard = false
         },
 
-        touchIndent () {
-            result.touchIndent = true
-        },
-
         discard () {
             result.discard = true
             result.cache = false

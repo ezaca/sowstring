@@ -24,6 +24,7 @@
     "url": "https://github.com/ezaca/sowstring/issues"
   },
   "scripts": {
+    "test": "node ./test/test",
     "build": "npx webpack",
     "watch": "npx webpack --watch"
   },
@@ -36,6 +37,11 @@
     "webpack": "^3.8.1"
   },
   "babel": {
-    "presets": ["env"]
+    "presets": [
+      "env"
+    ]
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0"
   }
 }

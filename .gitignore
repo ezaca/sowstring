@@ -49,4 +49,5 @@ Temporary Items
 # Node
 node_modules/
 .npm-debug.log
+package-lock.json
 temp/

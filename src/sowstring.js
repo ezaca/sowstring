@@ -44,7 +44,7 @@ function SowString(userGivenText, userGivenOptions)
         // ----------------------------
         if (lines.currentIsEmpty)
         {
-            leaf = new Leaf (lines.currentIndent, lines.lineNum, '')
+            leaf = new Leaf (lines.lineNum, lines.currentIndent, '')
             cache.push (leaf)
             continue
         }
@@ -113,9 +113,9 @@ function SowString(userGivenText, userGivenOptions)
             var node = new Node (lines.lineNum)
             node.level = indents.currentLevel
             result.checkHeadingSetup (node)
-            cache.flush (result)
             result.enter (node)
             indents.enter (leaf.indent)
+            cache.flush (result)
             result.push (leaf)
             continue
         } else
@@ -136,55 +136,14 @@ function SowString(userGivenText, userGivenOptions)
     return result.tree
 }
 
-function UnsowString(passedTree, passedOptions)
-{
-    if (! passedTree instanceof Array)
-        throw new Error('Invalid tree to unsow (argument 1)')
-    var options = Object(passedOptions)
-    if (typeof options.each !== 'function') options.each = null
-    if (typeof options.useHeading === 'undefined') options.useHeading = Boolean(passedTree.options.useHeading)
-    var result = [];
-
-    function crop(node)
-    {
-        if (node.parent && options.each)
-        {
-            let value = options.each(node, undefined)
-            if (value !== undefined)
-                result.push(value)
-        } else
-        if (node.parent && options.useHeading)
-            result.push(String(' ').repeat(node.parent.heading.indent) + node.heading.text)
-
-        for(var item of node.children)
-        {
-            if(item instanceof Node)
-                crop(item)
-            else
-            if (options.each)
-                result.push(options.each(node, item))
-            else
-            if (! item.text.trim())
-                result.push(item.text)
-            else
-                result.push(String('  ').repeat(item.level) + item.text)
-        }
-    }
-
-    crop(passedTree)
-    return result.join('\n')
-}
-
 SowString.Node = Node
 SowString.Leaf = Leaf
 
 if (typeof window !== "undefined")
 {
     window.SowString = SowString
-    window.UnsowString = UnsowString
 }
 if ((typeof module !== "undefined") && (module.exports))
 {
     module.exports.SowString = SowString
-    module.exports.UnsowString = UnsowString
 }

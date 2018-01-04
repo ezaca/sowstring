@@ -2,13 +2,14 @@ module.exports = class StringReader {
     constructor (plainText, options) {
         let parsed = String(plainText || '')
         .replace(/\r\n?/g, '\n')
+        .replace(/\n$/, '')
         .replace(/\t/g, options.tabReplace)
 
         if (! options.emptyLines)
         {
-            parsed = parsed.replace(/\n\n+/g, '\n')
-            .replace(/^\n+/g, '')
-            .trimRight()
+            parsed = parsed
+            .replace(/\n *\n+/g, '\n')
+            .replace(/^( *\n)+|\s*$/gm, '')
         }
 
         this.lines = parsed.split('\n')

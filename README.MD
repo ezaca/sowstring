@@ -1,8 +1,8 @@
 # Sow String
 
-This package contains a function to transform a string with good indentation to a Javascript array, where nodes with subnodes are array objects and nodes with no subnodes are string literals.
+This package allows to parse indented strings and get Javascript objects, which are easier to manage than a bunch of characters!
 
-[See documentation](https://ezaca.github.io/sowstring/docs/) or TL&DR below.
+[Documentation of version 1.5](https://ezaca.github.io/sowstring/docs/).
 
 # What does it really do?
 
@@ -19,28 +19,23 @@ Node 3
 With the `SowString` function you can access the tree this way:
 ```js
 var myTree = SowString(myIndentedTextAbove)
-myTree       // array with 5 items ("Node 1", array, "Node 2", array, "Node 3")
-myTree[0]    // "Node 1" string
-myTree[1]    // array with 2 items
-myTree[1][0] // "SubNode 1-A" string
-myTree[1][1] // "SubNode 1-B" string
-myTree[2]    // "Node 2" string
-myTree[3]    // array with 1 item
-
-var myTree = SowString(myIndentedTextAbove, {useHeading:true})
-myTree            // array with 3 items (array, array, "Node 3")
-myTree[0]         // array with 2 item
-myTree[0].heading // "Node 1" string
-myTree[0].isNode  // true
-myTree[0][0]      // "Sub Node 1-A" string
-myTree[0][0].isNode // undefined, which evalutes to false
-myTree[1]         // array with 1 item
-myTree[1].heading // "Node 2" string
-myTree[2]         // "Node 3" string
-myTree[2].heading // undefined because it is string
+console.log("Node:", myTree.children[0].text)
+console.log("Sub-node:", myTree.children[1].children[0].text)
+console.log("Iterable:")
+for (var node of myTree)
+    if (node instanceof SowString.Leaf) // We don't care about tree nodes, only leaves
+        console.log (node.text)
 ```
 
-With `UnsowString` you can use your array to have your indented text back.
+This will output:
+```
+Node: Node 1
+Sub-node: Sub node 1-A
+Iterable:
+Node 1
+Node 2
+Node 3
+```
 
 That's it!
 
@@ -49,34 +44,28 @@ That's it!
 Include the minified script:
 
 ```html
-<script type="text/javascript" src="dist/sowstring.min.js"></script>
+<script type="text/javascript" src="dist/sowstring.js"></script>
 ```
 
 Or require it on NodeJS in the way you like, we suggest:
 
 ```js
 var SowString = require('sowstring').SowString
-var UnsowString = require('sowstring').UnsowString
 ```
 
-Call one of the functions below when needed.
+Call the functions below to parse.
 
-`function SowString(String value, Object options=undefined): Array`
+`function SowString(String value, Object options=undefined): Node`
 Converts an indented string to a tree-like structure.
 
-`function UnsowString(Array value, Object options=undefined): String`
-Reverts the process making a similar string from the tree-like structure.
-
-[See documentation](https://ezaca.github.io/sowstring/docs/) for details and options.
+[See documentation](https://ezaca.github.io/sowstring/docs/) [version 1.5] for details and options.
 
 # Contribute
 
-The current library seems stable enough to use. It is simple enough to maintain, anyway. You don't need to fear, just take a look in the lonely file inside `src` directory.
-
 If someone want to contribute, here we have some suggestions:
 
+- Use the library
 - Test library and track bugs
-- Spell check on documentation
 - Implement more options and features
 - Plant a tree
 - Discover the meaning of the life
