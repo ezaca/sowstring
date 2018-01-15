@@ -32,7 +32,7 @@ function SowString(userGivenText, userGivenOptions)
     function discardOrCache () {
         if (interceptorResult.cache)
             cache.push(leaf)
-        return interceptor.discard || interceptorResult.cache
+        return interceptorResult.discard || interceptorResult.cache
     }
 
     while (lines.next ()) {
@@ -64,9 +64,10 @@ function SowString(userGivenText, userGivenOptions)
                 continue
         }
 
-        hasIndentError =
+        hasIndentError = !(
             indents.isValidLevel (leaf.level) ||
             indents.isValidIndent (leaf.indent)
+        )
 
         // ----------------------------
         // Indent errors
@@ -88,7 +89,7 @@ function SowString(userGivenText, userGivenOptions)
         }
 
         if (leaf.indent === null) {
-            leaf.level = indents.getIndentFromLevel (leaf.level)
+            leaf.indent = indents.getIndentFromLevel (leaf.level)
         }
 
         if (! indents.isValidLevel (leaf.level))

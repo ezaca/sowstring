@@ -1,0 +1,17 @@
+{
+    "description": "Test the ability to parse an indented string ignoring empty lines with useHeading",
+    "options": {
+        "emptyLines": false,
+        "useHeading": true,
+        "fixIndent": false
+    },
+    "tests": [
+        { "access": "0", "heading": "Node 0", "node": true },
+            { "access": "0.0", "text": "Leaf 0.0", "node": false },
+            { "access": "0.1", "heading": "Node 0.1", "node": true },
+                { "access": "0.1.0", "text": "Leaf 0.1.0", "node": false },
+            { "access": "0.2", "text": "Leaf 0.2", "node": false },
+        { "access": "1", "text": "Leaf 1", "node": false },
+        { "access": "2", "missing": true }
+    ]
+}

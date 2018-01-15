@@ -5,8 +5,8 @@
  */
 
 var userOptions = {
+    amount_of_cases_to_test: 3,
     first_test_number: 1,
-    amount_of_cases_to_test: 1,
     case_directory_with_trailing_slash: __dirname+'/node-tests/',
     case_file_prefix: "case",
     case_file_content_extension: ".txt",
@@ -22,23 +22,28 @@ var userOptions = {
 
 class TestCase {
     constructor (userOptions, file_index) {
-        this.content = undefined
-        this.json = undefined
-        this.options = undefined
-        this.sowstring = undefined
+        this.content = undefined // Plain string content
+        this.json = undefined // Test JSON
+        this.options = undefined // Options extracted from JSON
+        this.sowstring = undefined // SowString Node instance
 
         let filename =
             userOptions.case_directory_with_trailing_slash +
             userOptions.case_file_prefix +
             file_index
+        this.filename = filename
         this.$loadFileContent (filename + userOptions.case_file_content_extension)
         this.$loadFileTest (filename + userOptions.case_file_test_extension)
     }
 
     run () {
         this.$getOptions ()
-        this.$parseSowString ()
-        this.$validateTest ()
+        if (this.json.parse !== 'manual')
+            this.$parseSowString ()
+        if (this.json.exec === true)
+            this.$execRequire ()
+        else
+            this.$validateTest ()
     }
 
     $loadFileContent (filename) {
@@ -66,6 +71,20 @@ class TestCase {
         // This is, actually, a test!
         if (! this.sowstring instanceof SowString.Node)
             throw new Error ('SowString tree is not an instance of SowString.Node')
+    }
+
+    $execRequire () {
+        let func = require (this.filename + '.js')
+        let context = {
+            'SowString': SowString,
+            'sowstring': this.sowstring,
+            'json': this.json,
+            'options': this.options,
+            'content': this.content,
+            'filename': this.filename,
+        }
+        func.apply (context, [context])
+        this.sowstring = context.sowstring
     }
 
     $validateTest () {
@@ -143,7 +162,7 @@ class TestCase {
  */
 
 var fs = require ('fs');
-var {SowString, UnsowString} = require (userOptions.sowstring_directory);
+var SowString = require (userOptions.sowstring_directory).SowString;
 var plain_test_results = [];
 
 (function(){

@@ -1,4 +1,5 @@
 var NodeToString = require ('./toString')
+var NodeToJSON = require ('./toJSON')
 
 class Node {
     constructor (lineNum) {
@@ -30,6 +31,10 @@ class Node {
             yield [item, index]
     }
 
+    toJSON (options) {
+        return NodeToJSON.apply (this, [options || {}])
+    }
+
     toString (options) {
         return NodeToString.apply (this, [options || {}])
     }
@@ -44,7 +49,7 @@ class Leaf {
     }
 
     get isNode () { return false }
-    get empty () { return ! this.value.length }
+    get empty () { return ! this.value }
     get indentedValue () { return String(' ').repeat(this.indent) + this.value }
 
     toString () {

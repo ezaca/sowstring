@@ -28,6 +28,15 @@ module.exports = function createInterceptor (leaf, indents, result) {
             leaf.indent = indents.getLevelFromIndent (indent)
         },
 
+        get lineNum () { return leaf.lineNum },
+
+        get hasErrors () {
+            var level = leaf.level
+            if (level === null)
+                level = indents.getLevelFromIndent(leaf.indent)
+            return indents.isValidLevel (this.level)
+        },
+
         setProp (name, value) {
             if (['constructor', 'prototype', 'indent', 'level', 'lineNum', 'parent', 'children'].indexOf(name) >= 0)
                 throw new Error ('The field name "'+name+'" is reserved on SowString nodes')
@@ -73,13 +82,6 @@ module.exports = function createInterceptor (leaf, indents, result) {
             result.cache = false
             leaf.level = null
             leaf.indent = null
-        },
-
-        hasErrors () {
-            var level = leaf.level
-            if (level === null)
-                level = indents.getLevelFromIndent(leaf.indent)
-            return indents.isValidLevel (this.level)
         },
     }
 }

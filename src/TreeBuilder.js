@@ -18,9 +18,9 @@ module.exports = class TreeBuilder {
         if (! heading)
             console.error ('SowString Internal Error: there is no node to use as heading (but should be there), using undefined')
         node.heading = heading
-        if (heading) {
-            node.lineNum = node.lineNum
-            node.level = node.level
+        if (! heading) {
+            node.lineNum = heading.lineNum
+            node.level = heading.level
         }
     }
 
