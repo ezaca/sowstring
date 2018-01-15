@@ -5,17 +5,11 @@ module.exports = class StringReader {
         .replace(/\n$/, '')
         .replace(/\t/g, options.tabReplace)
 
-        if (! options.emptyLines)
-        {
-            parsed = parsed
-            .replace(/\n *\n+/g, '\n')
-            .replace(/^( *\n)+|\s*$/gm, '')
-        }
-
         this.lines = parsed.split('\n')
         if ((this.lines.length === 1) && (! this.lines[0].trim()))
             this.lines.pop()
         this.current = -1
+        this.options = options
     }
 
     get eof () {
@@ -47,6 +41,9 @@ module.exports = class StringReader {
 
     next() {
         this.current ++
+        if (! this.options.emptyLines)
+            while (! this.eof && this.isEmpty(this.current))
+                this.current ++
         return ! this.eof
     }
 
