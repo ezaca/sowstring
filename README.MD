@@ -2,7 +2,7 @@
 
 This package allows to parse indented strings and get Javascript objects, which are easier to manage than a bunch of characters!
 
-[Documentation of version 1.5](https://ezaca.github.io/sowstring/docs/).
+[Read complete documentation](https://ezaca.github.io/sowstring/docs/).
 
 # What does it really do?
 
