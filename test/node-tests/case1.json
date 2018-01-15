@@ -1,0 +1,23 @@
+{
+    "description": "Test the ability to parse an indented string caring for empty lines",
+    "options": {
+        "emptyLines": true,
+        "useHeading": false,
+        "fixIndent": false
+    },
+    "tests": [
+        { "access": "0", "text": null, "node": false },
+        { "access": "1", "text": "Item 2", "node": false },
+        { "access": "2", "node": true },
+            { "access": "2.0", "text": "Item 2.1", "node": false },
+            { "access": "2.1", "text": "Item 2.2", "node": false },
+            { "access": "2.2", "node": true },
+                { "access": "2.2.0", "text": null, "node": false },
+                { "access": "2.2.1", "text": "Item 2.2.2", "node": false },
+                { "access": "2.2.2", "text": null, "node": false },
+            { "access": "2.3", "text": "Item 2.3", "node": false },
+        { "access": "3", "text": "Item 3", "node": false },
+        { "access": "4", "text": null, "node": false },
+        { "access": "5", "missing": true }
+    ]
+}

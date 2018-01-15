@@ -6,189 +6,145 @@
  * @contributor Eliakim Zacarias <https://github.com/ezaca>
  */
 
-function SowString(passedValue, passedOptions)
+var Options = require ('./Options')
+var Node, Leaf
 {
-    // Fix options:
-    var options = Object(passedOptions)
-    options.indentMultiple = Number(options.indentMultiple) || 0
-    if (options.tabReplace===undefined) options.tabReplace=String(' ').repeat(4)
-    if (options.emptyLines===undefined) options.emptyLines=false
-    if (options.useHeading===undefined) options.useHeading=false
+    let Items = require ('./NodeLeaf')
+    Node = Items.Node
+    Leaf = Items.Leaf
+}
+var IndentManager = require ('./IndentManager')
+var Cache = require ('./cache')
+var StringReader = require('./StringReader')
+var TreeBuilder = require ('./TreeBuilder')
+var createInterceptor = require ('./createInterceptor')
 
-    // Capture lines:
-    var lines = String(passedValue)
-    .replace(/\r\n?/g, '\n')
-    .replace(/\t/g, options.tabReplace)
-    .trimRight()
-    .split('\n')
+function SowString(userGivenText, userGivenOptions)
+{
+    var options = new Options (userGivenOptions)
+    var lines = new StringReader (userGivenText, options)
+    var result = new TreeBuilder (options)
+    var indents = new IndentManager (options)
+    var cache = new Cache (options)
 
-    // Make result:
-    var result = []
-    result.parent = null
-    result.useHeading = options.useHeading
-    var emptyLinesCache = []
-    var interceptCache = []
-    var interceptSiblingsCache = []
+    var leaf, node, interceptor, interceptorResult, hasIndentError
 
-    function grow(parentArray, currentSpaces, lineIndex, level){
-        var node, ln, indent, idx = lineIndex
-        parentArray.isNode = true
-        parentArray.level = level
-        parentArray.indent = currentSpaces
-
-        while(idx < lines.length)
-        {
-            ln = lines[idx].trimLeft()
-
-            // Being the line empty,
-            // we treat it as special case and continue to next line
-            if (! ln.length)
-            {
-                if (options.emptyLines)
-                    emptyLinesCache.push(lines[idx])
-                idx++
-                continue
-            }
-
-            // Before continue, work a little on indent values
-            indent = lines[idx].length - ln.length
-            if (options.indentMultiple)
-            {
-                indent = Math.floor(indent / options.indentMultiple) * options.indentMultiple
-                ln = lines[idx].substr(indent)
-            }
-
-            // Have we a filter? Then execute the filter and if the answer is
-            // false, ignore this line.
-            if (options.filter && (false === options.filter.apply(null, [ln, indent])))
-            {
-                idx++
-                continue
-            }
-
-            // Have we an interceptor? Then execute it and get the possible new
-            // indent for the line.
-            if (options.intercept && (interceptCache[idx] === undefined))
-            {
-                let context = {
-                    sibling: currentSpaces,
-                    parent: parentArray.parent ? parentArray.parent.indent : 0,
-                    child: currentSpaces + options.tabReplace.length,
-                    auto: "auto",
-                    node: parentArray,
-                    tree: result,
-                }
-                interceptCache[idx] = options.intercept.apply(context, [ln, indent, idx, lines])
-            }
-            if (options.intercept && (interceptCache[idx] !== undefined))
-            {
-                indent = interceptCache[idx]
-                if (indent === 'auto')
-                {
-                    interceptSiblingsCache.push(ln)
-                    idx++
-                    continue
-                }
-            }
-
-            // Being the new indent lower than the old,
-            // we reached the end of our node and return the control.
-            if (currentSpaces > indent)
-            {
-                parentArray.push(...interceptSiblingsCache)
-                interceptSiblingsCache = []
-                return idx
-            }
-
-            // Being the new indent equal to the old,
-            // we have a new sibling item.
-            if (currentSpaces === indent)
-            {
-                parentArray.push(...emptyLinesCache)
-                parentArray.push(...interceptSiblingsCache)
-                parentArray.push(ln)
-                emptyLinesCache = []
-                interceptSiblingsCache = []
-                idx++
-                continue
-            }
-
-            // Being the new indent greater than the old,
-            // we reached a new level and a new child node will be called.
-            if (parentArray.length
-                && (parentArray[parentArray.length-1] instanceof Array)
-                && (parentArray[parentArray.length-1].indent !== indent))
-            {
-                let parentExpectation = parentArray.indent
-                let siblingExpectation = parentArray[parentArray.length-1].indent
-                let cruelRealWorld = indent
-                throw new Error('Bad indentation at line '+(idx+1)+
-                                ', we expected '+parentExpectation+
-                                ', '+siblingExpectation+
-                                ' or more spaces, but received only '+cruelRealWorld)
-            }
-            node = []
-            node.parent = parentArray
-            if (options.useHeading)
-                node.heading = parentArray.pop();
-            idx = grow(node, indent, idx, level+1)
-            node.pushIndex = parentArray.push(node)-1
-        }
-        parentArray.push(...interceptSiblingsCache)
-        interceptSiblingsCache = []
-        return idx
+    function discardOrCache () {
+        if (interceptorResult.cache)
+            cache.push(leaf)
+        return interceptorResult.discard || interceptorResult.cache
     }
 
-    grow(result, 0, 0, 0)
-    return result
-}
+    while (lines.next ()) {
+        interceptorResult = null
+        interceptor = null
 
-function UnsowString(passedTree, passedOptions)
-{
-    if (! passedTree instanceof Array)
-        throw new Error('Invalid tree to unsow (argument 1)')
-    var options = Object(passedOptions)
-    if (typeof options.each !== 'function') options.each = null
-    if (typeof options.useHeading === 'undefined') options.useHeading = Boolean(passedTree.useHeading)
-    var result = [];
-
-    function crop(node)
-    {
-        if (node.parent && options.each)
+        // ----------------------------
+        // Empty nodes
+        // ----------------------------
+        if (lines.currentIsEmpty)
         {
-            let value = options.each(node, undefined)
-            if (value !== undefined)
-                result.push(value)
+            leaf = new Leaf (lines.lineNum, lines.currentIndent, '')
+            cache.push (leaf)
+            continue
+        }
+
+        leaf = new Leaf (lines.lineNum, lines.currentIndent, lines.currentLine)
+        leaf.level = indents.getLevelFromIndent (leaf.indent)
+
+        // ----------------------------
+        // Interceptor
+        // ----------------------------
+        if (options.intercept)
+        {
+            interceptorResult = {}
+            interceptor = createInterceptor (leaf, indents, interceptorResult)
+            options.intercept.call (interceptor)
+            if (discardOrCache())
+                continue
+        }
+
+        hasIndentError = !(
+            indents.isValidLevel (leaf.level) ||
+            indents.isValidIndent (leaf.indent)
+        )
+
+        // ----------------------------
+        // Indent errors
+        // ----------------------------
+        if (hasIndentError && options.error) {
+            if (! interceptor) {
+                interceptorResult = {}
+                interceptor = createInterceptor (leaf, indents, interceptorResult)
+            }
+            options.error.call (interceptor)
+            if (discardOrCache())
+                continue
+        }
+
+        if (leaf.level === null) {
+            if (leaf.indent === null)
+                throw new Error ('Line has no valid indent or level value')
+            leaf.level = indents.getLevelFromIndent (leaf.indent)
+        }
+
+        if (leaf.indent === null) {
+            leaf.indent = indents.getIndentFromLevel (leaf.level)
+        }
+
+        if (! indents.isValidLevel (leaf.level))
+        {
+            if (! options.fixIndent)
+                throw new Error ('Invalid indent on line '+lines.lineNum)
+            cache.push (leaf)
+            continue
+        }
+
+        // ----------------------------
+        // Node passed
+        // ----------------------------
+
+        if (indents.isSibling (leaf.level)) {
+            cache.flush (result)
+            result.push (leaf)
+            continue
         } else
-        if (node.parent && options.useHeading)
-            result.push(String(' ').repeat(node.parent.indent) + node.heading)
 
-        for(var item of node)
-        {
-            if(item instanceof Array)
-                crop(item)
-            else
-            if (options.each)
-                result.push(options.each(node, item))
-            else
-            if (! item.trim())
-                result.push(item)
-            else
-                result.push(String(' ').repeat(node.indent) + item)
-        }
+        if (indents.isChild (leaf.level)) {
+            var node = new Node (lines.lineNum)
+            node.level = indents.currentLevel
+            result.checkHeadingSetup (node)
+            result.enter (node)
+            indents.enter (leaf.indent)
+            cache.flush (result)
+            result.push (leaf)
+            continue
+        } else
+
+        if (indents.isParent (leaf.level)) {
+            cache.flush (result)
+            while (! indents.isLevel (leaf.level)) {
+                indents.leave ()
+                result.leave ()
+            }
+            result.push (leaf)
+        } else
+
+            throw new Error ('SowString crashed (a node is not child, parent or sibling)')
     }
 
-    crop(passedTree)
-    return result.join('\n')
+    cache.flush (result)
+    return result.tree
 }
+
+SowString.Node = Node
+SowString.Leaf = Leaf
 
 if (typeof window !== "undefined")
 {
     window.SowString = SowString
-    window.UnsowString = UnsowString
 }
 if ((typeof module !== "undefined") && (module.exports))
 {
     module.exports.SowString = SowString
-    module.exports.UnsowString = UnsowString
 }

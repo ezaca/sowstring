@@ -1,0 +1,5 @@
+{
+    "description": "Test `error` and `intercept` options",
+    "exec": true,
+    "parse": "manual"
+}

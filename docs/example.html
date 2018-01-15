@@ -26,107 +26,70 @@
         <h2>Input</h2>
         <p>Type the string here and let the rest with us:</p>
         <textarea id="in1" oninput="doTheMagic()">Loading content with Javascript...</textarea>
+        <div><label><input type="checkbox" id="in_fixindent" onclick="doTheMagic()"> Fix indent automatically?</label></div>
         <div><label><input type="checkbox" id="in_heading" onclick="doTheMagic()"> Use heading items?</label></div>
         <div><label><input type="checkbox" id="in_empty" onclick="doTheMagic()"> Include empty lines?</label></div>
-        <div><label><input type="checkbox" id="in_filter" onclick="doTheMagic()"> Filter should ignore <code>//</code> and <code>#</code> lines?</label></div>
-        <div><label><input type="checkbox" id="in_intercept" onclick="doTheMagic()"> Intercept lines to recognize commands :child, :parent and :sibling</label></div>
+        <div><label><input type="checkbox" id="in_intercept" onclick="doTheMagic()"> Intercept lines to remove comments</label></div>
     </div>
     <div>
         <h2>Output</h2>
-        <p>When we apply <code class="pretty">SowString</code> we get the following (object as JSON):</p>
+        <p>Tree represented as JSON (<code class="pretty">toJSON</code>):</p>
         <pre id="out1"></pre>
     </div>
     <div>
-        <p>If we revert with <code class="pretty">UnsowString</code>, the "each" callback can format it as:</p>
+        <p>Tree reverted with <code class="pretty">toString</code> method:</p>
         <pre id="out2"></pre>
     </div>
 </main>
 
 <footer>&copy; 2017 Eliakim Zacarias. The MIT License.</footer>
 
-<script type="text/javascript" src="../dist/sowstring.min.js"></script>
+<script type="text/javascript" src="../dist/sowstring.js"></script>
 <script type="text/javascript">
 
 var in1 = document.getElementById('in1')
+var in_fixindent = document.getElementById('in_fixindent')
 var in_heading = document.getElementById('in_heading')
 var in_empty = document.getElementById('in_empty')
-var in_filter = document.getElementById('in_filter')
 var in_intercept = document.getElementById('in_intercept')
 var out1 = document.getElementById('out1')
 var out2 = document.getElementById('out2')
 
 in1.value =
-`Parent Node 1
-    Child Node 1
-        Grandson Node 1
-    Child Node 2
-    # Child Node 3 (filter will ignore)
-    Child Node 4
-Parent Node 2
-// Parent Node 3 (filter will ignore)
-This line will be child if intercepted :child
-    Normal child of previous item
-This will be child with previous if intercepted is active :auto
+`Node A
+    Node A.A
+        Leaf A.A.A
+    Leaf A.B
+    Leaf A.C
+
+    // Leaf A.D (intercept will discard)
+    // Leaf A.E (intercept will discard)
+Leaf B
 `
 
 function doTheMagic(){
     // Sow the string to crop the tree
     try{
         var options = {}
+        options.fixIndent = in_fixindent.checked
         options.useHeading = in_heading.checked
         options.emptyLines = in_empty.checked
-        if (in_filter.checked)
-            options.filter = function(ln, indent){
-                if(ln.match(/^(\/\/|#)/))
-                    return false
-                return true
-            }
         if (in_intercept.checked)
-            options.intercept = function(ln, indent, lineIndex, lines){
-                if (ln.match(/:child/i))
-                    return this.child
-                if (ln.match(/:parent/i))
-                    return this.parent
-                if (ln.match(/:sibling/i))
-                    return this.sibling
-                if (ln.match(/:auto/i))
-                    return 'auto'
+            options.intercept = function(){
+                if(this.text.match(/^(\/\/|#)/))
+                    this.discard ()
             }
         var tree = SowString(in1.value, options)
+        window.SOWSTRING_RESULT = tree
     }catch(e){
         out1.innerText = e
-        out2.innerText = e.stack
+        out2.innerText = e
         return
     }
 
-    // Get tree as JSON
-    out1.innerText = JSON.stringify(tree, null, 4)
-
-    // Revert the tree to string
-    // out2.innerHTML = UnsowString(tree);
-
-    // Harvest data from tree
-    out2.innerHTML = UnsowString(tree, {
-        each: function(node, item){
-            var indent
-            var text
-            var level
-            var replacements = {'<':'lt','>':'gt','&':'amp','"':'quot'}
-            if (item===undefined)
-            {
-                if (! node.heading)
-                    return
-                indent = '<span style="color:#ccc">'+String('·').repeat(node.parent.indent)+'</span>'
-                text = String(node.heading).replace(/[<>&"]/g, (match)=>{return '&'+replacements[match]+';'})
-                level = ' <span style="color:#888;font-size:0.7em">[Heading Level='+node.parent.level+']</span>'
-                return indent+text+level
-            }
-            indent = '<span style="color:#ccc">'+String('·').repeat(node.indent)+'</span>'
-            text = String(item).replace(/[<>&"]/g, (match)=>{return '&'+replacements[match]+';'})
-            level = ' <span style="color:#888;font-size:0.7em">[Level='+node.level+']</span>'
-            return indent+text+level
-        }
-    })
+    // Get tree
+    out1.innerText = tree.toJSON ({details: true}).stringify (null, 2)
+    out2.innerText = tree.toString ({details: false})
 }
 
 doTheMagic()

@@ -12,142 +12,115 @@
 <header>
     <div>
         <h1>Sow String</h1>
-        <p>A tiny pure Javascript library to sow indented strings and harvest tree arrays.</p>
+        <p>A Javascript library to transform indented strings into leafy trees.</p>
     </div>
     <div class="float">
         <a href="https://ezaca.github.com/sowstring/docs/example.html">Example</a>
-        <a href="https://ezaca.github.com/sowstring/dist/sowstring.min.js" download>Download</a>
         <a href="https://github.com/ezaca/sowstring">GitHub</a>
         <a href="https://github.com/ezaca/sowstring/blob/master/LICENSE">License</a>
     </div>
 </header>
 <main>
     <h2>How To Use?</h2>
-    <p>Include the library in your code:</p>
-    <pre><code class="xml">&lt;script src=&quot;path/to/library/sowstring.js&quot;&gt;&lt;/script&gt;</code></pre>
-    
-    <h3>String to Tree</h3>
-    <p>On Javascript, call the function <code class="pretty">SowString</code>, as follows:</p>
-    <pre><code class="js">var myTree = SowString(myString)</code></pre>
-    <p>You can also include options, which is a plain Javascript object:</p>
-    <pre><code class="js">var myTree = SowString(myString, {<span class="placeholder">&hellip;options&hellip;</span>})</code></pre>
-    <h4>Options</h4>
-    <p><code class="pretty">emptyLines</code> (Boolean) &mdash; when true, preserve the empty lines in the final tree items. When false, empty lines will be entirely ignored. The empty lines after the string content will be always ignored, independent of this option. Previous to version 1.2, empty lines was added before closing blocks, causing indented blocks to
-        receive all empty lines. Since version 1.2, empty lines are added in the same level as the next child. This way is more consistent, since line breaks are put after indented blocks. You can play with the example page to discover more about this behavior. <strong class="never-break">Default: false</strong>.</p>
-    <p><code class="pretty">filter</code> (Function) &mdash; when provided, it executes the function for each line with 2 arguments, <code>String line, Number indent</code>. If the function returns <code>false</code>, the line is completely ignored and removed. However, the function should not care about empty lines as they are treated in a different way. <strong class="never-break">Default: undefined</strong>.</p>
-    <p><code class="pretty">indentMultiple</code> (Number) &mdash; when provided, the number of spaces must be a multiple of this number to be a valid indentation. <strong class="never-break">Default: null</strong>.</p>
-    <p><code class="pretty">intercept</code> (Function) &mdash; when provided, it executes the function for each line with 4 arguments, <code>String line, Number originalIndent, Number lineIndex, Array lines</code>. If the function returns a number, it replaces the original indentation. If it returns the string <code>"auto"</code>, it will fit the item together with the current siblings. The function is executed after the <code>filter</code> function and does not receive empty lines. <strong class="never-break">Default: undefined</strong>.
-        <br>The called function has a <code>this</code> object assigned, containing useful informations accessed through its fields:
-        <br>&nbsp;&bull; <code>sibling</code> (Number) with the indentation value of the sibling nodes;
-        <br>&nbsp;&bull; <code>parent</code> (Number) with the indentation of the parent node to unindent one level;
-        <br>&nbsp;&bull; <code>child</code> (Number) with the default indentation (given by <code>tabReplace</code> option) of a child node of the last appended node;
-        <br>&nbsp;&bull; <code>auto</code> (String) the value <code>"auto"</code> to fit the item together with siblings next to it, this is preferred to return the string constant;
-        <br>&nbsp;&bull; <code>node</code> (Array) with the current parent node itself;
-        <br>&nbsp;&bull; <code>tree</code> (Array) with the resulting tree until that time.
-    </p>
-    <p><code class="pretty">tabReplace</code> (String) &mdash; set this option to the string that will replace every TAB character (ASCII: 9). <strong class="never-break">Default: string with 4 whitespaces</strong>.</p>
-    <p><code class="pretty">useHeading</code> (Boolean) &mdash; when true, tree omits each item before arrays of nodes and set those line as <code class="pretty">heading</code> attributes of nodes. The option itself is saved in the tree outter node as <code>useHeading</code> to remember the tree scheme. <strong class="never-break">Default: false</strong>.</p>
-    
-    <h3>Tree to String</h3>
-    <p>If you don't want to harvest directly in the tree object, may be you want to unsow that string.
-    Thinking on that, we have the function <code class="pretty">UnsowString</code>, which convert the tree back to the (almost original) string:</p>
-    <pre><code class="js">var myString = UnsowString(myTree)</code></pre>
-    <p>Here we also have options, which is also a plain object:</p>
-    <pre><code class="js">var myString = UnowString(myTree, {<span class="placeholder">&hellip;options&hellip;</span>})</code></pre>
-    <h4>Options</h4>
-    <p><code class="pretty">each</code> (Function) &mdash; you know that times when you want to modify each item before write it as string? We don't know too, but we have a function to do that, anyway!
-    The callback function passed to this option will be called once for each item, first to the node, then for the children, then to the next sibling and so on&hellip;. The function receives 2 arguments,
-    being the first the parent node of the item (an Array), and the second is the item itself (the String). When the function is called for nodes, the second argument will be <code>undefined</code>.
-    <strong>Please note</strong> that users must take care of nodes with heading themselves when using this option. If the option is left undefined, the library manage it automatically.
-    <strong class="never-break">Default: undefined</strong>.</p>
-    <p><code class="pretty">useHeading</code> (Boolean) &mdash; this value is automatically guessed from the tree object using its <code>useHeading</code> attribute, but can be overriden by this option for obscure reasons.
-    Please note that if this option does not match the option passed to <code class="pretty">SowString</code>, it will generate unexpected results, like missing content or the text <q>undefined</q> in some places.
-    <strong class="never-break">Default: guessed from the tree</strong>.</p>
 
-    <h2>Errors and poisonous trees</h2>
-    <p>If the string has inconsistent indentation, an error of the primitive type
-    <code class="pretty">Error</code> will be thrown. For example, consider
-    the following tree:</p>
+    <h3>Install</h3>
+    <p>The package is on NPM:</p>
+    <pre><code>npm install sowstring</code></pre>
+
+    <h3>Usage</h3>
+
+    <p>For NodeJS, just require the file:</p>
+    <pre><code class="js">var SowString = require ("sowstring").SowString;<br><br>var tree = SowString (sourceString, optionsObject);</code></pre>
+
+    <p>On browsers, include the script:</p>
+    <pre><code class="xml">&lt;script src=&quot;path/to/library/dist/sowstring.js&quot;&gt;&lt;/script&gt;</code></pre>
+ 
+    You will have <code>SowString</code> registered globally in the <code>window</code> object. The function has the classes <code>SowString.Node</code> and <code>SowString.Leaf</code> as well.
+
+    <h3>Options</h3>
+    <p>Options should be passed as an object to the second argument of <code>SowString (source, { options:here })</code> function, and all its fields are optionals:</p>
+
+    <p><code class="pretty">emptyLines</code> (Boolean) &mdash; when true, preserve the empty lines in the final tree items. When false, empty lines will be entirely ignored. <strong class="never-break">Default: false</strong>.</p>
+    <p><code class="pretty">error</code> (Function) &mdash; when provided, it executes always when the indent is invalid in the string or made invalid by the <code>intercept</code> function. The function is called without arguments, with an handler object as <code>this</code> and ignores returns. It is the last chance to fix manually an indent error, and whether it is not fixed, it will fix automatically or throw an exception, according to <code>fixIndent</code> option. <a href="#interceptor-class">See below</a> for a complete reference of the <code>this</code> object passed to the function, and its uses. <strong class="never-break">Default: null</strong>.</p>
+    <p><code class="pretty">fixIndent</code> (Boolean) &mdash; when true, indent errors will be fixed automatically, if not <code>error</code> handler, nor <code>intercept</code> callback take care of it. If false, an exception is thrown, identifying the error and line of occurence. <strong class="never-break">Default: false</strong>.</p>
+    <p><code class="pretty">intercept</code> (Function) &mdash; when provided, it executes the function for each line. The function is called without arguments, with an handler object as <code>this</code> and ignores returns. <a href="#interceptor-class">See below</a> for a complete reference of the <code>this</code> object and its uses. The function will not handle empty lines. <strong class="never-break">Default: null</strong>.</p>
+    <p><code class="pretty">tabReplace</code> (String or Number) &mdash; set this option to the string that will replace every TAB character (ASCII: 9), or to the amount of spaces that replace it. <strong class="never-break">Default: string with 4 whitespaces</strong>.</p>
+    <p><code class="pretty">useHeading</code> (Boolean) &mdash; when true, tree omits each item before arrays of nodes and set those line as <code class="pretty">heading</code> attributes of nodes. The option itself is saved in the tree outter node as <code>useHeading</code> to remember the tree scheme. <strong class="never-break">Default: false</strong>.</p>
+ 
+    <h4 id="interceptor-class">Intercept and Error context object (this)</h4>
+    <p>The callbacks <code>error</code> and <code>intercept</code> passed to the options are called without arguments. The handling is made through the <code>this</code> object. The object has some useful informations and functions to handle various cases. See below a list of properties and functions:</p>
+    <p><code class="pretty">hasErrors</code> (Boolean) &mdash; inform if the current indent is invalid according to the tree. <a href="#invalid-indent">See the section</a> about invalid indent below.</p>
+    <p><code class="pretty">indent</code> (Number) &mdash; get or set the indent of the item. The indent is given by the number of whitespaces before the line start. Its concept is the same as the code indentation. Strings indented with 2 spaces will also have the indents multiple of 2 (0, 2, 4, 6&hellip;).</p>
+    <p><code class="pretty">level</code> (Number) &mdash; get or set the level assigned to the item. The level is the height of the item in the tree, according to the indent, being no indent the level 0, the first indent the level 1 and so on&hellip;</p>
+    <p><code class="pretty">lineNum</code> (Number, readonly) &mdash; number of the line currently being parsed in the given string.</p>
+    <p><code class="pretty">startIndent</code> (Number, readonly) &mdash; inform the original indent of the item when the function was called. This value will not update during the function execution.</p>
+    <p><code class="pretty">startLevel</code> (Number, readonly) &mdash; inform the original level of the item when the function was called. This value will not update during the function execution.</p>
+    <p><code class="pretty">text</code> (String) &mdash; get or set the text assigned to the item. The initial value is the line of the string assigned with the item.</p>
+    <p><code class="pretty">discard ()</code> (no return) &mdash; the item and line will be completely ignored and will not be included in the resulting tree. Use this function to remove lines on the fly.</p>
+    <p><code class="pretty">getProp (name)</code> (returns the value) &mdash; get a custom property previously assigned to the current item.</p>
+    <p><code class="pretty">setProp (name, value)</code> (no return) &mdash; set a custom property to the current item. This is useful to assign the item with custom fields related to the user logic. There are some reserved names which you cannot use: <code>constructor</code>, <code>prototype</code>, <code>indent</code>, <code>level</code>, <code>lineNum</code>, <code>parent</code> and <code>children</code>.</p>
+    <p><code class="pretty">setChild ()</code> (no return) &mdash; causes the item to be a child of the previous appended item. The item will have the same indent as the previous plus 1.</p>
+    <p><code class="pretty">setParent ()</code> (no return) &mdash; causes the item to back to the parent level of the previous appended item. The item will have the same indent as the parent of the previous item.</p>
+    <p><code class="pretty">setSibling ()</code> (no return) &mdash; causes the item to be a sibling of the previous appended item. The item will have the very same indent as the previous item.</p>
+    <p><code class="pretty">setSiblingOfNext ()</code> (no return) &mdash; the item will not be appended in the tree while the next item is not appended. When the next item is appended, all the stack of "siblings of next" are appended before it, in the same level. It is the same process used to fix invalid indentations.</p>
+
+    <h3>Tree to String</h3>
+    <p>If you want to get back the tree as a string, you can use the <code>toString</code> method in the most outter (root) node. This node is the tree itself, which is returned from the <code>SowString</code> function.</p>
+    <pre><code class="js">var myString = myTree.toString ()</code></pre>
+    <p>Here we also have options, which is also a plain object:</p>
+    <pre><code class="js">var myString = myTree.toString({<span class="placeholder">&hellip;options&hellip;</span>})</code></pre>
+    
+    <h4>Options</h4>
+    <p><code class="pretty">details</code> (Boolean) &mdash; If true, the resulting string will include a note between brackets <code>[ ]</code> defining if the object is a Node or Leaf, and the line that generated the item. <strong class="never-break">Default: false</strong>.</p>
+
+    <h2 id="invalid-indent">Invalid indent and poisonous trees</h2>
+    <p>If the string has inconsistent indentation, it msut be treated before the item is added on the tree.
+    If no process fix the error, and <code>fixIndent</code> is false, an error of type
+    <code class="pretty">Error</code> will be thrown informing the line of occurence. Otherwise, the fixed indent
+    is assigned to the item.</p>
+    <p>For example, consider the following tree:</p>
     <pre>Parent<br>    Node 1<br>    Node 2<br>   Node 3<br>    Node 4</pre>
 
     <p>Observe the <q>Node 3</q> item, it has one space less than the previous
-    item, but has three spaces more than the parent. It is impossible to solve
-    automatically what it means because it cannot be the parent, as it has much
-    more indentation, and cannot be a sibling because it is very little indented.
+    item, but has three spaces more than the parent. It can be hard to realize
+    what were the intention of the user. For the computer, the item cannot be the parent,
+    as it has much more indentation, and cannot be a sibling because it is very little indented.
     So, it is not a parent, sibling or child, and there's no other state in our
     tree.</p>
-    <p>These kind of issues must be solved manually, or through other business specific
-    algorithms.</p>
-    <p>In the other hand, if you are using the <code class="pretty">indentMultiple</code> option,
-    this case will be fixed automatically because of the logic applied. The item <q>Parent</q>
-    will end with 2 children, <q>Node 1</q> and <q>Node 2</q>. <q>Node 3</q>, in turn, is a
-    sibling of <q>Parent</q>, with 3 spaces at start, and <q>Node 4</q> as its only child.</p>
-    <p>Specifically with the <code class="pretty">indentMultiple</code> option, the tree can be
-    understood as the following structure:</p>
-    <pre><code>Parent<br>    Node 1<br>    Node 2<br>___Node3<br>    Node 4</code></pre>
-    <p>In other cases, when the option is not present, the following Error will be thrown:</p>
-    <pre><code>Uncaught Error: Bad indentation at line X, we expected Y, Z or more spaces, but received only W</code></pre>
-    <p>Remember that the referred line starts from 1, being 1 the first line of the passed string.</p>
 
-    <h2>Using the tree</h2>
-    <p>After using the <code class="pretty">SowString</code> function with a valid
-    string, you will receive the tree as a Javascript Array. Each String item of
-    this array is a common item, and each Array item of this array represents a subnode
-    with more strings and arrays. The items can be referred by their array indexes.</p>
+    <h3>Solution I</h3>
+    <p>This issue can be solved automatically by the library passing the option
+        <code>fixIndent</code> as <code>true</code>. In this case, the item awaits
+        for the next inclusion and is appended as sibling of next item.</p>
 
-    <p>Consider the following three:</p>
-    <pre><code>Derivation<br>  Javascript<br>    TypeScript<br>    CoffeeScript<br>  CSS<br>    LESS<br>    SASS</code></pre>
-    <p>This will result in the following Javascript structure:</p>
-    <pre><code>[
-    0:"Derivation",
-    1:[
-        0:"Javascript",
-        1:[
-            0:"Typescript",
-            1:"CoffeeScript"
-          ],
-        2:"CSS",
-        3:[
-            0:"CSS",
-            1:"LESS"
-          ]
-      ]
-]</code></pre>
+    <h3>Solution II</h3>
+    <p>The user can set an <code>error</code> callback in the options. So, if the
+        line as any issue relative to its indent, the function is called and the
+        user can set a valid indent using the <code>this</code> object. If this
+        function just call <code>this.setSiblingOfNext ();</code>, this code will
+        do exactly the same as the <code>fixIndent</code> option.</p>
+    <p>If the error is not really solved in this option, the algorithm will fallback
+        to the <code>fixIndent</code> option. If the option is not enabled, an error
+        is thrown.</p>
+    <p>This approach can be combined with solution I and executes before that.</p>
 
-    <p>Note as the subnodes are identified by its previous item, which is always a string.
-    Unless there is some error with the library, you can consider the following rules:</p>
-    <ul>
-        <li>An array will never be empty, except for the outter array (that returned from the function);</li>
-        <li>The first item of any children array will be always a string, except for the outter array;</li>
-        <li>The last item of the outter array will never be an empty string;</li>
-    </ul>
+    <h3>Solution III</h3>
+    <p>The user can also check for indent errors in the <code>intercept</code>
+        function passed in the options. The check can be made using the <code>hasErrors</code>
+        field of the <code>this</code> object. If the indent has errors, the user can
+        fix it manually.</p>
+    <p>The <em>intercept</em> function is executed before the <em>error</em>
+        function, and both execute before the automatic fix (<code>fixIndent</code>).
+        Then, the first try of the library is to use the <em>intercept</em> function,
+        if there is an error in the indent, the <em>error</em> function is called and,
+        if the error wasn't solved, the automatic fix is executed or an error is thrown. </p>
+    <p>This approach can be combined with solution I and II and executes before them.</p>
 
-    <p>Each array, including the outter one, have the following properties:</p>
-    <p><code class="pretty">heading</code> (String) &mdash; only if <code>useHeading</code> was used. Represents the heading line for the current node.</p>
-    <p><code class="pretty">indent</code> (Number) &mdash; number of spaces before each string child.</p>
-    <p><code class="pretty">isNode</code> (true) &mdash; set always true for arrays, this way in string nodes <q>isNode</q> will evalute to false (undefined).
-    <p><code class="pretty">level</code> (Number) &mdash; the level of the node, starting from zero and increasing 1 for each descendant.</p>
-    <p><code class="pretty">parent</code> (Array) &mdash; reference to the parent node or null for the outter node.</p>
-    <p><code class="pretty">pushIndex</code> (Number) &mdash; the index where the node was pushed in its parent.</p>
-
-    <p>You can access these properties for any array in the tree:</p>
-    <pre><code class="js">myTree.level // will be 0&#10;myTree[1][1].level // will be 2</code></pre>
-    <p>Referencing a string item you can get its content, for example:</p>
-    <pre><code class="js">myTree[0] // will be "Derivation" in the previous example.</code></pre>
-
-    <h2>Storing the tree</h2>
-    <p>Even whether you are tempted to store the tree as a plain JSON string, be
-    advised that it will lose the properties of the children arrays</p>
-    <p>To save the items as string, we recommend to "unsow" the tree with the
-    function <code class="pretty">UnsowString</code>. This function will generate
-    a very similar string, which will recover all properties later, through the
-    <code class="pretty">SowString</code> function.</p>
 </main>
 
 <footer>&copy; 2017 Eliakim Zacarias. The MIT License.</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/xml.min.js" integrity="sha256-tTizFdjdqBNNTjhOdrSB4jSoCiSZjbtQBdsUSl+P+PQ=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/javascript.min.js" integrity="sha256-sZa6ttk3lwj5MNkWzq2VrQ6WFB965Gn0uLe3oUBH2Iw=" crossorigin="anonymous"></script>
 <script type="text/javascript">
 hljs.initHighlightingOnLoad();
