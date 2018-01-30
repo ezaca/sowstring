@@ -31,6 +31,16 @@ class Node {
             yield [item, index]
     }
 
+    each (callback) {
+        var item
+        for (item of this.children)
+        {
+            callback.apply (undefined, [item])
+            if (item.isNode)
+                item.each (callback)
+        }
+    }
+
     toJSON (options) {
         return NodeToJSON.apply (this, [options || {}])
     }
