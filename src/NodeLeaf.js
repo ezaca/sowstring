@@ -12,7 +12,7 @@ class Node {
     get isNode () { return true }
     get text () { return this.heading.text; }
     get indent () { return this.heading.indent; }
-    get indentedValue () { return this.heading.indentedValue; }
+    get indentedText () { return this.heading.indentedText; }
     get empty () { return this.heading.empty; }
 
     push (item) {
@@ -63,13 +63,13 @@ class Leaf {
     }
 
     get isNode () { return false }
-    get empty () { return ! this.value }
-    get indentedValue () { return String(' ').repeat(this.indent) + this.value }
+    get empty () { return ! this.text }
+    get indentedText () { return String(' ').repeat(this.indent) + this.text }
 
     toString () {
         if (this.empty)
             return ''
-        return this.indentedValue
+        return this.indentedText
     }
 }
 
