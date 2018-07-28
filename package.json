@@ -1,6 +1,6 @@
 {
   "name": "sowstring",
-  "version": "2.1.1",
+  "version": "2.2.1",
   "description": "Parse intended strings",
   "homepage": "https://github.com/ezaca/sowstring#readme",
   "main": "src/index.js",

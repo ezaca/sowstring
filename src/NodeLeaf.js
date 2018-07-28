@@ -10,6 +10,10 @@ class Node {
     }
 
     get isNode () { return true }
+    get text () { return this.heading.text; }
+    get indent () { return this.heading.indent; }
+    get indentedValue () { return this.heading.indentedValue; }
+    get empty () { return this.heading.empty; }
 
     push (item) {
         this.children.push (item)
